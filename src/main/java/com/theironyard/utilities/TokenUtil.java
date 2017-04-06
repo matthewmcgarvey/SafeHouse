@@ -6,7 +6,7 @@ import io.jsonwebtoken.impl.crypto.MacProvider;
 
 import java.security.Key;
 
-public class KeyUtil {
+public class TokenUtil {
 
     static Key key = MacProvider.generateKey();
 

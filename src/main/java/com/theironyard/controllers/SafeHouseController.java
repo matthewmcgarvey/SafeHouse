@@ -6,7 +6,7 @@ import com.theironyard.entities.Item;
 import com.theironyard.entities.User;
 import com.theironyard.services.HouseRepository;
 import com.theironyard.services.UserRepository;
-import com.theironyard.utilities.KeyUtil;
+import com.theironyard.utilities.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +58,7 @@ public class SafeHouseController {
             User user = users.findOneByName(username);
             if (user != null) {
                 if (user.verifyPassword(password)) {
-                    return new ResponseEntity<>(user, HttpStatus.OK);
+                    return new ResponseEntity<>(TokenUtil.getJwt(username), HttpStatus.OK);
                 }
             }
         }
