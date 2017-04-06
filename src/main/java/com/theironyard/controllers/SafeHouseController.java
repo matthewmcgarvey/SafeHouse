@@ -22,7 +22,7 @@ public class SafeHouseController {
 
     // register a new user
     @RequestMapping(path = "/register", method = RequestMethod.POST)
-    public void addUser(@RequestBody Map<String, String> json) {
+    public ResponseEntity<?> addUser(@RequestBody Map<String, String> json) {
         String username = json.get("username");
         String password = json.get("password");
 
@@ -31,10 +31,14 @@ public class SafeHouseController {
 
         if ((username != null && !username.isEmpty()) && (password != null && !password.isEmpty())) {
             if (users.findOneByName(username) == null) {
-                users.save(new User(username, password));
+                User user = new User(username, password);
+                users.save(user);
+                return new ResponseEntity<>(user, HttpStatus.OK);
             }
         }
+        return new ResponseEntity<>("Invalid username or password.", HttpStatus.BAD_REQUEST);
     }
+    
     // user login
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     public ResponseEntity<?> login(@RequestBody Map<String, String> json) {
@@ -48,12 +52,11 @@ public class SafeHouseController {
             User user = users.findOneByName(username);
             if (user != null) {
                 if (user.verifyPassword(password)) {
-                    return new ResponseEntity<Object>(user, HttpStatus.OK);
+                    return new ResponseEntity<>(user, HttpStatus.OK);
                 }
             }
         }
-
-        return new ResponseEntity<Object>("Bad login.", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>("Bad login.", HttpStatus.UNAUTHORIZED);
 
     }
     // user logout
