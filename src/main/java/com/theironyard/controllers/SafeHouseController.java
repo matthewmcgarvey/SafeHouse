@@ -7,8 +7,8 @@ import com.theironyard.entities.User;
 import com.theironyard.services.HouseRepository;
 import com.theironyard.services.UserRepository;
 import com.theironyard.utilities.TokenUtil;
-import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,9 +23,9 @@ import java.util.Map;
 public class SafeHouseController {
 
     @Autowired
-    UserRepository users;
+    private UserRepository users;
     @Autowired
-    HouseRepository houses;
+    private HouseRepository houses;
 
     // register a new user
     @RequestMapping(path = "/register", method = RequestMethod.POST)
@@ -33,17 +33,13 @@ public class SafeHouseController {
         String username = json.get("username");
         String password = json.get("password");
 
-        System.out.println("Username: " + username);
-        System.out.println("Password: " + password);
-
-        if ((username != null && !username.isEmpty()) && (password != null && !password.isEmpty())) {
-            if (users.findOneByName(username) == null) {
-                User user = new User(username, password);
-                users.save(user);
-                return new ResponseEntity<>(user, HttpStatus.OK);
-            }
+        try {
+            User user = new User(username, password); // throws IllegalArgumentException on bad UN or PW
+            users.save(user);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (DataIntegrityViolationException | IllegalArgumentException e) {
+            return new ResponseEntity<>("Invalid username or password.", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>("Invalid username or password.", HttpStatus.BAD_REQUEST);
     }
 
     // user login

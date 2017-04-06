@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -21,8 +19,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    public User(String name, String password) {
-        this.name = name;
+    public User(String name, String password) throws IllegalArgumentException {
+        setName(name);
         setPassword(password);
     }
 
@@ -40,8 +38,12 @@ public class User {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String name) throws IllegalArgumentException {
+        if (name != null && !name.isEmpty()) {
+            this.name = name;
+            return;
+        }
+        throw new IllegalArgumentException();
     }
 
     @JsonIgnore
@@ -49,8 +51,11 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+    public void setPassword(String password) throws IllegalArgumentException {
+        if (password != null && !password.isEmpty()) {
+            this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+        }
+        throw new IllegalArgumentException();
     }
 
     public boolean verifyPassword(String password) {
