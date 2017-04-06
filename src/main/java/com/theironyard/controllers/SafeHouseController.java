@@ -39,6 +39,9 @@ public class SafeHouseController {
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (DataIntegrityViolationException | IllegalArgumentException e) {
             return new ResponseEntity<>("Invalid username or password.", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Problem", HttpStatus.BAD_REQUEST);
         }
     }
 

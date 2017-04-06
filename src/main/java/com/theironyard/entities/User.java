@@ -38,10 +38,10 @@ public class User {
         return name;
     }
 
-    public void setName(String name) throws IllegalArgumentException {
+    public boolean setName(String name) throws IllegalArgumentException {
         if (name != null && !name.isEmpty()) {
             this.name = name;
-            return;
+            return true;
         }
         throw new IllegalArgumentException();
     }
@@ -51,9 +51,10 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) throws IllegalArgumentException {
+    public boolean setPassword(String password) throws IllegalArgumentException {
         if (password != null && !password.isEmpty()) {
             this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+            return true;
         }
         throw new IllegalArgumentException();
     }
