@@ -8,19 +8,23 @@ public class Item {
 
     @Id
     @GeneratedValue
-    int id;
+    private int id;
 
     @Column(nullable = false)
-    String name;
+    private String name;
 
     @Column
-    String manufacturer;
+    private String manufacturer;
 
     @Column
-    String model;
+    private String model;
 
     @Column
-    String image;
+    private String image;
+
+    public Item(String name) {
+        this.name = name;
+    }
 
     public Item() {}
 
