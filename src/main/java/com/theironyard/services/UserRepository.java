@@ -9,4 +9,6 @@ import java.util.List;
 public interface UserRepository extends CrudRepository<User, Integer> {
     @Override
     List<User> findAll();
+
+    User findOneByName(String name);
 }

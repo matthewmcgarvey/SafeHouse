@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -11,13 +13,13 @@ public class User {
 
     @Id
     @GeneratedValue
-    int id;
+    private int id;
+
+    @Column(nullable = false, unique = true)
+    private String name;
 
     @Column(nullable = false)
-    String name;
-
-    @Column(nullable = false)
-    String password;
+    private String password;
 
     public User(String name, String password) {
         this.name = name;
@@ -48,7 +50,7 @@ public class User {
     }
 
     public void setPassword(String password) {
-        BCrypt.hashpw(password, BCrypt.gensalt());
+        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
     public boolean verifyPassword(String password) {
