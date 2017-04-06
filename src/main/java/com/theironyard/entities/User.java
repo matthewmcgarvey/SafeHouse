@@ -13,7 +13,7 @@ public class User {
     @GeneratedValue
     int id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     String name;
 
     @Column(nullable = false)
@@ -48,7 +48,7 @@ public class User {
     }
 
     public void setPassword(String password) {
-        BCrypt.hashpw(password, BCrypt.gensalt());
+        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
     public boolean verifyPassword(String password) {

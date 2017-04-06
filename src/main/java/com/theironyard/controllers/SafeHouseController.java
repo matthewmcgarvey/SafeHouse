@@ -1,8 +1,11 @@
 package com.theironyard.controllers;
 
 
+import com.theironyard.entities.User;
 import com.theironyard.services.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,12 +23,38 @@ public class SafeHouseController {
     // register a new user
     @RequestMapping(path = "/register", method = RequestMethod.POST)
     public void addUser(@RequestBody Map<String, String> json) {
-        System.out.println(json);
+        String username = json.get("username");
+        String password = json.get("password");
+
+        System.out.println("Username: " + username);
+        System.out.println("Password: " + password);
+
+        if ((username != null && !username.isEmpty()) && (password != null && !password.isEmpty())) {
+            if (users.findOneByName(username) == null) {
+                users.save(new User(username, password));
+            }
+        }
     }
     // user login
     @RequestMapping(path = "/login", method = RequestMethod.POST)
-    public void login(@RequestBody Map<String, String> json) {
-        System.out.println(json);
+    public ResponseEntity<?> login(@RequestBody Map<String, String> json) {
+        String username = json.get("username");
+        String password = json.get("password");
+
+        System.out.println("Username: " + username);
+        System.out.println("Password: " + password);
+
+        if ((username != null && !username.isEmpty()) && (password != null && !password.isEmpty())) {
+            User user = users.findOneByName(username);
+            if (user != null) {
+                if (user.verifyPassword(password)) {
+                    return new ResponseEntity<Object>(user, HttpStatus.OK);
+                }
+            }
+        }
+
+        return new ResponseEntity<Object>("Bad login.", HttpStatus.UNAUTHORIZED);
+
     }
     // user logout
     @RequestMapping(path = "/logout", method = RequestMethod.POST)
