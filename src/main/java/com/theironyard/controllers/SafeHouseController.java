@@ -6,7 +6,9 @@ import com.theironyard.entities.Item;
 import com.theironyard.entities.User;
 import com.theironyard.services.HouseRepository;
 import com.theironyard.services.UserRepository;
+import com.theironyard.utilities.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,9 +23,9 @@ import java.util.Map;
 public class SafeHouseController {
 
     @Autowired
-    UserRepository users;
+    private UserRepository users;
     @Autowired
-    HouseRepository houses;
+    private HouseRepository houses;
 
     // register a new user
     @RequestMapping(path = "/register", method = RequestMethod.POST)
@@ -31,17 +33,16 @@ public class SafeHouseController {
         String username = json.get("username");
         String password = json.get("password");
 
-        System.out.println("Username: " + username);
-        System.out.println("Password: " + password);
-
-        if ((username != null && !username.isEmpty()) && (password != null && !password.isEmpty())) {
-            if (users.findOneByName(username) == null) {
-                User user = new User(username, password);
-                users.save(user);
-                return new ResponseEntity<>(user, HttpStatus.OK);
-            }
+        try {
+            User user = new User(username, password); // throws IllegalArgumentException on bad UN or PW
+            users.save(user);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (DataIntegrityViolationException | IllegalArgumentException e) {
+            return new ResponseEntity<>("Invalid username or password.", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Problem", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>("Invalid username or password.", HttpStatus.BAD_REQUEST);
     }
 
     // user login
@@ -57,24 +58,26 @@ public class SafeHouseController {
             User user = users.findOneByName(username);
             if (user != null) {
                 if (user.verifyPassword(password)) {
-                    return new ResponseEntity<>(user, HttpStatus.OK);
+                    return new ResponseEntity<>(TokenUtil.getJwt(username), HttpStatus.OK);
                 }
             }
         }
         return new ResponseEntity<>("Bad login.", HttpStatus.UNAUTHORIZED);
     }
 
-    // get user
+    // get user Todo
     @RequestMapping(path = "/user", method = RequestMethod.GET)
     public void getUser(@RequestBody Map<String, String> json) {
         System.out.println(json);
     }
-    // get house
+
+    // get house Todo
     @RequestMapping(path = "/house", method = RequestMethod.GET)
     public void getHouse(@RequestBody Map<String, String> json) {
         System.out.println(json);
     }
-    // add a new house
+
+    // add a new house Todo
     @RequestMapping(path = "/house", method = RequestMethod.POST)
     public void addHouse(@RequestBody Map<String, String> json) {
         String username = json.get("username");
@@ -83,12 +86,14 @@ public class SafeHouseController {
         User user = users.findOneByName(username);
         houses.save(new House(houseName, user));
     }
-    // remove a house
+
+    // remove a house Todo
     @RequestMapping(path = "/house", method = RequestMethod.DELETE)
     public void deleteHouse(@RequestBody Map<String, String> json) {
         System.out.println(json);
     }
-    // add item to house
+
+    // add item to house Todo
     @RequestMapping(path = "/item", method = RequestMethod.POST)
     public void addItem(@RequestBody Map<String, String> json) {
         String username = json.get("username");
@@ -100,14 +105,17 @@ public class SafeHouseController {
         house.addItem(new Item(itemName));
         houses.save(house);
     }
-    // remove item from house
+
+    // remove item from house Todo
     @RequestMapping(path = "/item", method = RequestMethod.DELETE)
     public void deleteItem(@RequestBody Map<String, String> json) {
         System.out.println(json);
     }
-    // get items from search
+
+    // get items from search Todo
     @RequestMapping(path = "/items", method = RequestMethod.GET)
     public void getItems(@RequestBody Map<String, String> json) {
         System.out.println(json);
+
     }
 }
