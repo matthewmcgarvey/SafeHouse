@@ -1,8 +1,9 @@
-package com.theironyard.API.recalls;
+package com.theironyard.api;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Map;
 
 public class Recall {
@@ -15,11 +16,9 @@ public class Recall {
     public String productModel;
     public String UPC;
 
-    private String toJson = "format=json";
-
     private StringBuffer url = new StringBuffer("https://www.saferproducts.gov/RestWebServices/Recall?");
 
-    public Map<String, Object>[] submit() {
+    public List<Map<String, Object>> submit() {
         if (recallNumber != null) {
             url.append("RecallNumber=");
             url.append(recallNumber);
@@ -61,10 +60,10 @@ public class Recall {
             url.append("&");
         }
 
-        url.append(toJson);
+        url.append("format=json"); // for json formatting
         String recallUrl = url.toString();
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Map[]> response = restTemplate.getForEntity(recallUrl, Map[].class);
+        ResponseEntity<List> response = restTemplate.getForEntity(recallUrl, List.class);
         return response.getBody();
     }
 
