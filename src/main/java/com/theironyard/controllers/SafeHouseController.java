@@ -6,6 +6,11 @@ import com.theironyard.entities.Item;
 import com.theironyard.entities.User;
 import com.theironyard.services.HouseRepository;
 import com.theironyard.services.UserRepository;
+import com.theironyard.utilities.AmazonUtil;
+import com.theironyard.utilities.TokenUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -14,9 +19,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Map;
+
 
 @RestController
 public class SafeHouseController {
@@ -57,7 +65,7 @@ public class SafeHouseController {
             User user = users.findOneByName(username);
             if (user != null) {
                 if (user.verifyPassword(password)) {
-                    return new ResponseEntity<>(username, HttpStatus.OK);
+                    return new ResponseEntity<>(TokenUtil.getJwt(username), HttpStatus.OK);
                 }
             }
         }
@@ -115,6 +123,29 @@ public class SafeHouseController {
     @RequestMapping(path = "/items", method = RequestMethod.GET)
     public void getItems(@RequestBody Map<String, String> json) {
         System.out.println(json);
+    }
 
+    //Search Amazon Product API ToDo
+    @RequestMapping(path = "/items", method = RequestMethod.POST)
+    public ResponseEntity<?> searchItems(@RequestBody Map<String, String> json) throws Exception {
+        String keywords = json.get("keywords");
+        String category = json.get("category");
+        String searchUrl = AmazonUtil.lookupItem(keywords, category);
+
+        try {
+            URL url = new URL(searchUrl);
+            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+            String strTemp = "";
+            while (null != (strTemp = br.readLine())) {
+                JSONObject xmlJSONObj = XML.toJSONObject(strTemp);
+                String jsonFormattedString = xmlJSONObj.toString(4);
+                return new ResponseEntity<>(jsonFormattedString, HttpStatus.OK);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>("Problem with the search request", HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(searchUrl, HttpStatus.OK);
     }
 }
