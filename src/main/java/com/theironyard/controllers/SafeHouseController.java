@@ -6,9 +6,8 @@ import com.theironyard.entities.Item;
 import com.theironyard.entities.User;
 import com.theironyard.services.HouseRepository;
 import com.theironyard.services.UserRepository;
-import com.theironyard.utilities.AmazonUtil;
+import com.theironyard.api.AmazonUtil;
 import com.theironyard.utilities.TokenUtil;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Map;
 
 

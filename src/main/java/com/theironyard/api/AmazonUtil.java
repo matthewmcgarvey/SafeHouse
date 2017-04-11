@@ -1,24 +1,7 @@
-package com.theironyard.utilities;
+package com.theironyard.api;
 
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
-
-import static sun.plugin.javascript.navig.JSType.Document;
 
 public class AmazonUtil {
 
@@ -37,8 +20,6 @@ public class AmazonUtil {
             return "";
         }
 
-        String requestUrl = null;
-
         if (searchCategory.isEmpty()) {
             searchCategory = "All";
         }
@@ -53,10 +34,7 @@ public class AmazonUtil {
         params.put("Keywords", keywords); //Keyword(s) entered by user
         params.put("AssociateTag","safe0cd-20");
 
-        requestUrl = helper.sign(params);
-
-        return requestUrl;
-
+        return helper.sign(params);
     }
 
 }
