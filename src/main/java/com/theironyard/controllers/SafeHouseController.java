@@ -7,6 +7,7 @@ import com.theironyard.entities.User;
 import com.theironyard.services.HouseRepository;
 import com.theironyard.services.UserRepository;
 import com.theironyard.utilities.AmazonUtil;
+import com.theironyard.utilities.TokenUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
@@ -18,13 +19,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Map;
+
 
 @RestController
 public class SafeHouseController {
@@ -65,7 +65,7 @@ public class SafeHouseController {
             User user = users.findOneByName(username);
             if (user != null) {
                 if (user.verifyPassword(password)) {
-                    return new ResponseEntity<>(username, HttpStatus.OK);
+                    return new ResponseEntity<>(TokenUtil.getJwt(username), HttpStatus.OK);
                 }
             }
         }
