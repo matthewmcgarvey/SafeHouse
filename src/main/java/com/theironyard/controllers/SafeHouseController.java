@@ -7,7 +7,6 @@ import com.theironyard.entities.User;
 import com.theironyard.services.HouseRepository;
 import com.theironyard.services.UserRepository;
 import com.theironyard.api.AmazonUtil;
-import com.theironyard.utilities.TokenUtil;
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +62,7 @@ public class SafeHouseController {
             User user = users.findOneByName(username);
             if (user != null) {
                 if (user.verifyPassword(password)) {
-                    return new ResponseEntity<>(TokenUtil.getJwt(username), HttpStatus.OK);
+                    return new ResponseEntity<>(HttpStatus.OK);
                 }
             }
         }
