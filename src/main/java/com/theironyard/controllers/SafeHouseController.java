@@ -13,10 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -75,10 +73,15 @@ public class SafeHouseController {
         System.out.println(json);
     }
 
-    // get house Todo
-    @RequestMapping(path = "/house", method = RequestMethod.GET)
-    public void getHouse(@RequestBody Map<String, String> json) {
-        System.out.println(json);
+    // get house
+    @RequestMapping(path = "/house/{houseId}", method = RequestMethod.GET)
+    public ResponseEntity<?> getHouse(@PathVariable Integer houseId, @RequestBody Map<String, String> json) {
+        House house = houses.findOne(houseId);
+
+        if (house == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(house, HttpStatus.OK);
     }
 
     // add a new house Todo
