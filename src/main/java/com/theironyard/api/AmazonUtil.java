@@ -1,12 +1,19 @@
 package com.theironyard.api;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class AmazonUtil {
 
-    private static final String AWS_ACCESS_KEY_ID = "ENTER KEY HERE";
-    private static final String AWS_SECRET_KEY = "ENTER SECRET KEY HERE";
+    private static String AWS_ACCESS_KEY_ID = System.getenv("AWS_ACCESS_KEY_ID");
+
+    private static String AWS_SECRET_KEY = System.getenv("AWS_SECRET_KEY");
+
     private static final String ENDPOINT = "ecs.amazonaws.com";
 
     public static String lookupItem(String keywords, String searchCategory){

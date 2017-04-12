@@ -13,10 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -75,20 +73,31 @@ public class SafeHouseController {
         System.out.println(json);
     }
 
-    // get house Todo
-    @RequestMapping(path = "/house", method = RequestMethod.GET)
-    public void getHouse(@RequestBody Map<String, String> json) {
-        System.out.println(json);
+    // get house
+    @RequestMapping(path = "/house/{houseId}", method = RequestMethod.GET)
+    public ResponseEntity<?> getHouse(@PathVariable Integer houseId) {
+        House house = houses.findOne(houseId);
+
+        if (house == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(house, HttpStatus.OK);
     }
 
     // add a new house Todo
     @RequestMapping(path = "/house", method = RequestMethod.POST)
-    public void addHouse(@RequestBody Map<String, String> json) {
+    public ResponseEntity addHouse(@RequestBody Map<String, String> json) {
         String username = json.get("username");
         String houseName = json.get("houseName");
 
         User user = users.findOneByName(username);
-        houses.save(new House(houseName, user));
+        if (user != null) {
+            House house = new House(houseName, user);
+            houses.save(house);
+            return new ResponseEntity<>(house, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     // remove a house Todo
