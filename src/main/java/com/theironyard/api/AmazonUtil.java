@@ -10,11 +10,9 @@ import java.util.Map;
 
 public class AmazonUtil {
 
-    @Value("${aws.id}")
-    private static String AWS_ACCESS_KEY_ID;
+    private static String AWS_ACCESS_KEY_ID = System.getenv("AWS_ACCESS_KEY_ID");
 
-    @Value("${aws.secret}")
-    private static String AWS_SECRET_KEY;
+    private static String AWS_SECRET_KEY = System.getenv("AWS_SECRET_KEY");
 
     private static final String ENDPOINT = "ecs.amazonaws.com";
 
