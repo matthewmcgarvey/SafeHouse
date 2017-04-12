@@ -101,9 +101,9 @@ public class SafeHouseController {
     }
 
     // remove a house Todo
-    @RequestMapping(path = "/house", method = RequestMethod.DELETE)
-    public void deleteHouse(@RequestBody Map<String, String> json) {
-        System.out.println(json);
+    @RequestMapping(path = "/house/{houseId}", method = RequestMethod.DELETE)
+    public void deleteHouse(@PathVariable Integer houseId) {
+        houses.delete(houseId);
     }
 
     // add item to house Todo
@@ -132,16 +132,14 @@ public class SafeHouseController {
     }
 
     //Search Amazon Product API ToDo
-    @RequestMapping(path = "/items", method = RequestMethod.POST)
-    public ResponseEntity<?> searchItems(@RequestBody Map<String, String> json) throws Exception {
-        String keywords = json.get("keywords");
-        String category = json.get("category");
+    @RequestMapping(path = "/items/{keywords}/{category}", method = RequestMethod.GET)
+    public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category) throws Exception {
         String searchUrl = AmazonUtil.lookupItem(keywords, category);
 
         try {
             URL url = new URL(searchUrl);
             BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-            String strTemp = "";
+            String strTemp;
             while (null != (strTemp = br.readLine())) {
                 JSONObject xmlJSONObj = XML.toJSONObject(strTemp);
                 String jsonFormattedString = xmlJSONObj.toString(4);
@@ -151,7 +149,6 @@ public class SafeHouseController {
             ex.printStackTrace();
             return new ResponseEntity<>("Problem with the search request", HttpStatus.BAD_REQUEST);
         }
-
         return new ResponseEntity<>(searchUrl, HttpStatus.OK);
     }
 }
