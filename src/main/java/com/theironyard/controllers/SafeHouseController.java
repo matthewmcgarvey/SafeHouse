@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -75,7 +76,7 @@ public class SafeHouseController {
 
     // get house
     @RequestMapping(path = "/house/{houseId}", method = RequestMethod.GET)
-    public ResponseEntity<?> getHouse(@PathVariable Integer houseId, @RequestBody Map<String, String> json) {
+    public ResponseEntity<?> getHouse(@PathVariable Integer houseId) {
         House house = houses.findOne(houseId);
 
         if (house == null) {
@@ -86,12 +87,18 @@ public class SafeHouseController {
 
     // add a new house Todo
     @RequestMapping(path = "/house", method = RequestMethod.POST)
-    public void addHouse(@RequestBody Map<String, String> json) {
+    public ResponseEntity addHouse(@RequestBody Map<String, String> json) {
         String username = json.get("username");
         String houseName = json.get("houseName");
 
         User user = users.findOneByName(username);
-        houses.save(new House(houseName, user));
+        if (user != null) {
+            House house = new House(houseName, user);
+            houses.save(house);
+            return new ResponseEntity<>(house, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     // remove a house Todo
