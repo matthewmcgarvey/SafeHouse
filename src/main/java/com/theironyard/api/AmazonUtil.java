@@ -1,10 +1,5 @@
 package com.theironyard.api;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +27,7 @@ public class AmazonUtil {
         }
 
         //Load search parameters
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("Service", "AWSECommerceService");
         params.put("Version", "2009-03-31");
         params.put("SearchIndex", searchCategory);
@@ -43,5 +38,4 @@ public class AmazonUtil {
 
         return helper.sign(params);
     }
-
 }
