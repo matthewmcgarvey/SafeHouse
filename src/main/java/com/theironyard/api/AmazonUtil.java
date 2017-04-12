@@ -1,10 +1,5 @@
 package com.theironyard.api;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,5 +38,4 @@ public class AmazonUtil {
 
         return helper.sign(params);
     }
-
 }

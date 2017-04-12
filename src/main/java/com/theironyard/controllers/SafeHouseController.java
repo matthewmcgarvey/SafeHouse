@@ -53,6 +53,8 @@ public class SafeHouseController {
         String username = json.get("username");
         String password = json.get("password");
 
+        System.out.println(username + ": " + password );
+
         System.out.println("Username: " + username);
         System.out.println("Password: " + password);
 
@@ -60,17 +62,21 @@ public class SafeHouseController {
             User user = users.findOneByName(username);
             if (user != null) {
                 if (user.verifyPassword(password)) {
-                    return new ResponseEntity<>(HttpStatus.OK);
+                    return new ResponseEntity<>(user, HttpStatus.OK);
                 }
             }
         }
         return new ResponseEntity<>("Bad login.", HttpStatus.UNAUTHORIZED);
     }
 
-    // get user Todo
-    @RequestMapping(path = "/user", method = RequestMethod.GET)
-    public void getUser(@RequestBody Map<String, String> json) {
-        System.out.println(json);
+    // get user
+    @RequestMapping(path = "/user/{id}", method = RequestMethod.GET)
+    public ResponseEntity<?> getUser(@PathVariable Integer id) {
+        User user = users.findOne(id);
+        if (user != null) {
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     // get house
