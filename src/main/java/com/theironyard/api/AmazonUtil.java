@@ -27,7 +27,7 @@ public class AmazonUtil {
         }
 
         //Load search parameters
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("Service", "AWSECommerceService");
         params.put("Version", "2009-03-31");
         params.put("SearchIndex", searchCategory);

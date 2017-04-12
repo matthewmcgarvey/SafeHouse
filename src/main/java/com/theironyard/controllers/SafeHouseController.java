@@ -84,13 +84,13 @@ public class SafeHouseController {
     public ResponseEntity<?> getHouse(@PathVariable Integer houseId) {
         House house = houses.findOne(houseId);
 
-        if (house == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (house != null) {
+            return new ResponseEntity<>(house, HttpStatus.OK);
         }
-        return new ResponseEntity<>(house, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    // add a new house Todo
+    // add a new house
     @RequestMapping(path = "/house", method = RequestMethod.POST)
     public ResponseEntity addHouse(@RequestBody Map<String, String> json) {
         String username = json.get("username");
@@ -106,10 +106,10 @@ public class SafeHouseController {
         }
     }
 
-    // remove a house Todo
-    @RequestMapping(path = "/house", method = RequestMethod.DELETE)
-    public void deleteHouse(@RequestBody Map<String, String> json) {
-        System.out.println(json);
+    // remove a house
+    @RequestMapping(path = "/house/{houseId}", method = RequestMethod.DELETE)
+    public void deleteHouse(@PathVariable Integer houseId) {
+        houses.delete(houseId);
     }
 
     // add item to house Todo
