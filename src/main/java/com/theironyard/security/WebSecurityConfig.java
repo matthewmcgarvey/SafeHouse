@@ -35,7 +35,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/users").permitAll()
                 // Allow login without being logged in
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/login").permitAll()
                 // Allow item search without being logged in
                 .antMatchers(HttpMethod.GET, "/items/**/**").permitAll()
                 // All other requests must be authenticated
