@@ -60,9 +60,6 @@ public class SafeHouseController {
 
         System.out.println(username + ": " + password);
 
-        System.out.println("Username: " + username);
-        System.out.println("Password: " + password);
-
         if ((username != null && !username.isEmpty()) && 
                 (password != null && !password.isEmpty()) &&
                 (password.equals(password2))) {
