@@ -14,7 +14,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -106,7 +105,6 @@ public class SafeHouseController {
         }
     }
 
-
     // remove a house
     @RequestMapping(path = "/house/{houseId}", method = RequestMethod.DELETE)
     public void deleteHouse(@PathVariable Integer houseId) {
@@ -156,6 +154,6 @@ public class SafeHouseController {
             ex.printStackTrace();
             return new ResponseEntity<>("Problem with the search request", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(searchUrl, HttpStatus.OK);
+        return new ResponseEntity<>("An unexpected error occurred", HttpStatus.EXPECTATION_FAILED);
     }
 }
