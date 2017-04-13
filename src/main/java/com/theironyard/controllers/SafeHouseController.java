@@ -30,7 +30,7 @@ public class SafeHouseController {
     private HouseRepository houses;
 
     // register a new user
-    @RequestMapping(path = "/register", method = RequestMethod.POST)
+    @RequestMapping(path = "/users", method = RequestMethod.POST)
     public ResponseEntity<?> addUser(@RequestBody Map<String, String> json) {
         String username = json.get("username");
         String password = json.get("password");
@@ -45,6 +45,16 @@ public class SafeHouseController {
             e.printStackTrace();
             return new ResponseEntity<>("Problem", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    // get user
+    @RequestMapping(path = "/users/{id}", method = RequestMethod.GET)
+    public ResponseEntity<?> getUser(@PathVariable Integer id) {
+        User user = users.findOne(id);
+        if (user != null) {
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     // user login
@@ -69,29 +79,8 @@ public class SafeHouseController {
         return new ResponseEntity<>("Bad login.", HttpStatus.UNAUTHORIZED);
     }
 
-    // get user
-    @RequestMapping(path = "/user/{id}", method = RequestMethod.GET)
-    public ResponseEntity<?> getUser(@PathVariable Integer id) {
-        User user = users.findOne(id);
-        if (user != null) {
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-
-    // get house
-    @RequestMapping(path = "/house/{houseId}", method = RequestMethod.GET)
-    public ResponseEntity<?> getHouse(@PathVariable Integer houseId) {
-        House house = houses.findOne(houseId);
-
-        if (house != null) {
-            return new ResponseEntity<>(house, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-
     // add a new house
-    @RequestMapping(path = "/house", method = RequestMethod.POST)
+    @RequestMapping(path = "/houses", method = RequestMethod.POST)
     public ResponseEntity addHouse(@RequestBody Map<String, String> json) {
         String username = json.get("username");
         String houseName = json.get("houseName");
@@ -106,8 +95,19 @@ public class SafeHouseController {
         }
     }
 
+    // get house
+    @RequestMapping(path = "/houses/{houseId}", method = RequestMethod.GET)
+    public ResponseEntity<?> getHouse(@PathVariable Integer houseId) {
+        House house = houses.findOne(houseId);
+
+        if (house != null) {
+            return new ResponseEntity<>(house, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
     // remove a house
-    @RequestMapping(path = "/house/{houseId}", method = RequestMethod.DELETE)
+    @RequestMapping(path = "/houses/{houseId}", method = RequestMethod.DELETE)
     public void deleteHouse(@PathVariable Integer houseId) {
         houses.delete(houseId);
     }
@@ -131,14 +131,8 @@ public class SafeHouseController {
         System.out.println(json);
     }
 
-    // get items from search Todo
-    @RequestMapping(path = "/items", method = RequestMethod.GET)
-    public void getItems(@RequestBody Map<String, String> json) {
-        System.out.println(json);
-    }
-
     //Search Amazon Product API ToDo
-    @RequestMapping(path = "/items", method = RequestMethod.POST)
+    @RequestMapping(path = "/items", method = RequestMethod.GET)
     public ResponseEntity<?> searchItems(@RequestBody Map<String, String> json) throws Exception {
         String keywords = json.get("keywords");
         String category = json.get("category");
