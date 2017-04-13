@@ -7,16 +7,11 @@ import com.theironyard.entities.User;
 import com.theironyard.services.HouseRepository;
 import com.theironyard.services.UserRepository;
 import com.theironyard.api.AmazonUtil;
-import org.json.JSONObject;
-import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.Map;
 
 @CrossOrigin
@@ -53,7 +48,7 @@ public class SafeHouseController {
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("Unable to find user", HttpStatus.BAD_REQUEST);
     }
 
     // user login
@@ -61,13 +56,16 @@ public class SafeHouseController {
     public ResponseEntity<?> login(@RequestBody Map<String, String> json) {
         String username = json.get("username");
         String password = json.get("password");
+        String password2 = json.get("password2");
 
         System.out.println(username + ": " + password);
 
         System.out.println("Username: " + username);
         System.out.println("Password: " + password);
 
-        if ((username != null && !username.isEmpty()) && (password != null && !password.isEmpty())) {
+        if ((username != null && !username.isEmpty()) && 
+                (password != null && !password.isEmpty()) &&
+                (password.equals(password2))) {
             User user = users.findOneByName(username);
             if (user != null) {
                 if (user.verifyPassword(password)) {
@@ -131,7 +129,6 @@ public class SafeHouseController {
     }
 
     //Search Amazon Product API ToDo
-
     @RequestMapping(path = "/items/{keywords}/{category}", method = RequestMethod.GET)
     public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category) throws Exception {
         return AmazonUtil.lookupItem(keywords, category);

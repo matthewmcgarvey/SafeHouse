@@ -1,6 +1,7 @@
 package com.theironyard.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.persistence.*;
@@ -34,6 +35,7 @@ public class User {
         this.id = id;
     }
 
+    @JsonProperty(value = "username")
     public String getName() {
         return name;
     }
