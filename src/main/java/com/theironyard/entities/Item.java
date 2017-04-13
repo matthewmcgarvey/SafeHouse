@@ -10,20 +10,23 @@ public class Item {
     @GeneratedValue
     private int id;
 
+    @Column
+    private int upc;
+
     @Column(nullable = false)
-    private String name;
+    private String title;
 
     @Column
-    private String manufacturer;
+    private String brand;
 
     @Column
     private String model;
 
     @Column
-    private String image;
+    private String imageUrl;
 
-    public Item(String name) {
-        this.name = name;
+    public Item(String title) {
+        this.title = title;
     }
 
     public Item() {}
@@ -36,20 +39,28 @@ public class Item {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public int getUpc() {
+        return upc;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUpc(int upc) {
+        this.upc = upc;
     }
 
-    public String getManufacturer() {
-        return manufacturer;
+    public String getTitle() {
+        return title;
     }
 
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 
     public String getModel() {
@@ -60,11 +71,11 @@ public class Item {
         this.model = model;
     }
 
-    public String getImage() {
-        return image;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
