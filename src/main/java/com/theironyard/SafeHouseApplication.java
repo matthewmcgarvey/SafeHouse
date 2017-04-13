@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SafeHouseApplication {
 
     public static void main(String[] args) {
-        System.out.println(AmazonUtil.lookupItem("Samsung Galaxy", "All"));
+//        System.out.println(AmazonUtil.lookupItem("Samsung Galaxy", "All"));
         SpringApplication.run(SafeHouseApplication.class, args);
     }
 }
