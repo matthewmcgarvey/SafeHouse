@@ -6,18 +6,19 @@ import com.theironyard.entities.Item;
 import com.theironyard.entities.User;
 import com.theironyard.services.HouseRepository;
 import com.theironyard.services.UserRepository;
-import com.theironyard.utilities.TokenUtil;
+import com.theironyard.api.AmazonUtil;
+import org.json.JSONObject;
+import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
-
+import org.springframework.web.bind.annotation.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.Map;
+
 
 @RestController
 public class SafeHouseController {
@@ -51,6 +52,8 @@ public class SafeHouseController {
         String username = json.get("username");
         String password = json.get("password");
 
+        System.out.println(username + ": " + password );
+
         System.out.println("Username: " + username);
         System.out.println("Password: " + password);
 
@@ -58,39 +61,54 @@ public class SafeHouseController {
             User user = users.findOneByName(username);
             if (user != null) {
                 if (user.verifyPassword(password)) {
-                    return new ResponseEntity<>(TokenUtil.getJwt(username), HttpStatus.OK);
+                    return new ResponseEntity<>(user, HttpStatus.OK);
                 }
             }
         }
         return new ResponseEntity<>("Bad login.", HttpStatus.UNAUTHORIZED);
     }
 
-    // get user Todo
-    @RequestMapping(path = "/user", method = RequestMethod.GET)
-    public void getUser(@RequestBody Map<String, String> json) {
-        System.out.println(json);
+    // get user
+    @RequestMapping(path = "/user/{id}", method = RequestMethod.GET)
+    public ResponseEntity<?> getUser(@PathVariable Integer id) {
+        User user = users.findOne(id);
+        if (user != null) {
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    // get house Todo
-    @RequestMapping(path = "/house", method = RequestMethod.GET)
-    public void getHouse(@RequestBody Map<String, String> json) {
-        System.out.println(json);
+    // get house
+    @RequestMapping(path = "/house/{houseId}", method = RequestMethod.GET)
+    public ResponseEntity<?> getHouse(@PathVariable Integer houseId) {
+        House house = houses.findOne(houseId);
+
+        if (house != null) {
+            return new ResponseEntity<>(house, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    // add a new house Todo
+    // add a new house
     @RequestMapping(path = "/house", method = RequestMethod.POST)
-    public void addHouse(@RequestBody Map<String, String> json) {
+    public ResponseEntity addHouse(@RequestBody Map<String, String> json) {
         String username = json.get("username");
         String houseName = json.get("houseName");
 
         User user = users.findOneByName(username);
-        houses.save(new House(houseName, user));
+        if (user != null) {
+            House house = new House(houseName, user);
+            houses.save(house);
+            return new ResponseEntity<>(house, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
-    // remove a house Todo
-    @RequestMapping(path = "/house", method = RequestMethod.DELETE)
-    public void deleteHouse(@RequestBody Map<String, String> json) {
-        System.out.println(json);
+    // remove a house
+    @RequestMapping(path = "/house/{houseId}", method = RequestMethod.DELETE)
+    public void deleteHouse(@PathVariable Integer houseId) {
+        houses.delete(houseId);
     }
 
     // add item to house Todo
@@ -116,6 +134,11 @@ public class SafeHouseController {
     @RequestMapping(path = "/items", method = RequestMethod.GET)
     public void getItems(@RequestBody Map<String, String> json) {
         System.out.println(json);
+    }
 
+    //Search Amazon Product API ToDo
+    @RequestMapping(path = "/items/{keywords}/{category}", method = RequestMethod.GET)
+    public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category) throws Exception {
+        return AmazonUtil.lookupItem(keywords, category);
     }
 }
