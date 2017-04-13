@@ -139,21 +139,6 @@ public class SafeHouseController {
     //Search Amazon Product API ToDo
     @RequestMapping(path = "/items/{keywords}/{category}", method = RequestMethod.GET)
     public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category) throws Exception {
-        String searchUrl = AmazonUtil.lookupItem(keywords, category);
-
-        try {
-            URL url = new URL(searchUrl);
-            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-            String strTemp;
-            while (null != (strTemp = br.readLine())) {
-                JSONObject xmlJSONObj = XML.toJSONObject(strTemp);
-                String jsonFormattedString = xmlJSONObj.toString(4);
-                return new ResponseEntity<>(jsonFormattedString, HttpStatus.OK);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ResponseEntity<>("Problem with the search request", HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>("An unexpected error occurred", HttpStatus.EXPECTATION_FAILED);
+        return AmazonUtil.lookupItem(keywords, category);
     }
 }
