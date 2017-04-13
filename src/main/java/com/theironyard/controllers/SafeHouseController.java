@@ -45,9 +45,7 @@ public class SafeHouseController {
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>("Invalid username or password", HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Problem", HttpStatus.BAD_REQUEST);
-        }
+        } 
     }
 
     // get user
