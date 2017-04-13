@@ -85,7 +85,7 @@ public class SafeHouseController {
             houses.save(house);
             return new ResponseEntity<>(house, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Unable to find user", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -97,7 +97,7 @@ public class SafeHouseController {
         if (house != null) {
             return new ResponseEntity<>(house, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("Unable to find house", HttpStatus.BAD_REQUEST);
     }
 
     // remove a house
@@ -120,13 +120,12 @@ public class SafeHouseController {
     }
 
     // remove item from house Todo
-    @RequestMapping(path = "/item", method = RequestMethod.DELETE)
-    public void deleteItem(@RequestBody Map<String, String> json) {
-        System.out.println(json);
+    @RequestMapping(path = "/item/{itemId}", method = RequestMethod.DELETE)
+    public void deleteItem(@PathVariable Integer itemId) {
     }
 
     //Search Amazon Product API ToDo
-    @RequestMapping(path = "/items/{keywords}/{category}", method = RequestMethod.GET)
+    @RequestMapping(path = "/items/{category}/{keywords}", method = RequestMethod.GET)
     public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category) throws Exception {
         return AmazonUtil.lookupItem(keywords, category);
     }
