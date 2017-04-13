@@ -28,15 +28,24 @@ public class SafeHouseController {
     public ResponseEntity<?> addUser(@RequestBody Map<String, String> json) {
         String username = json.get("username");
         String password = json.get("password");
+        String password2 = json.get("password2");
+
+        if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
+            return new ResponseEntity<>("Username and password must not be empty.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (!password.equals(password2)) {
+            return new ResponseEntity<>("Passwords do not match.", HttpStatus.BAD_REQUEST);
+        }
+
+        User user = new User(username, password);
 
         try {
-            User user = new User(username, password); // throws IllegalArgumentException on bad UN or PW
             users.save(user);
             return new ResponseEntity<>(user, HttpStatus.OK);
-        } catch (DataIntegrityViolationException | IllegalArgumentException e) {
-            return new ResponseEntity<>("Invalid username or password.", HttpStatus.BAD_REQUEST);
+        } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<>("Invalid username or password", HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
             return new ResponseEntity<>("Problem", HttpStatus.BAD_REQUEST);
         }
     }
@@ -56,13 +65,11 @@ public class SafeHouseController {
     public ResponseEntity<?> login(@RequestBody Map<String, String> json) {
         String username = json.get("username");
         String password = json.get("password");
-        String password2 = json.get("password2");
 
         System.out.println(username + ": " + password);
 
         if ((username != null && !username.isEmpty()) && 
-                (password != null && !password.isEmpty()) &&
-                (password.equals(password2))) {
+                (password != null && !password.isEmpty())) {
             User user = users.findOneByName(username);
             if (user != null) {
                 if (user.verifyPassword(password)) {

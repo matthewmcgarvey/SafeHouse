@@ -21,8 +21,8 @@ public class User {
     private String password;
 
     public User(String name, String password) throws IllegalArgumentException {
-        setName(name);
-        setPassword(password);
+        this.name = name;
+        this.password = password;
     }
 
     public User() {}
@@ -40,12 +40,8 @@ public class User {
         return name;
     }
 
-    public boolean setName(String name) throws IllegalArgumentException {
-        if (name != null && !name.isEmpty()) {
-            this.name = name;
-            return true;
-        }
-        throw new IllegalArgumentException();
+    public void setName(String name) throws IllegalArgumentException {
+        this.name = name;
     }
 
     @JsonIgnore
@@ -53,12 +49,8 @@ public class User {
         return password;
     }
 
-    public boolean setPassword(String password) throws IllegalArgumentException {
-        if (password != null && !password.isEmpty()) {
-            this.password = BCrypt.hashpw(password, BCrypt.gensalt());
-            return true;
-        }
-        throw new IllegalArgumentException();
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public boolean verifyPassword(String password) {
