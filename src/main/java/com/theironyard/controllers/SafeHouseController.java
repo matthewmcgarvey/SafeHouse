@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Map;
 
-
+@CrossOrigin
 @RestController
 public class SafeHouseController {
 
@@ -53,7 +53,7 @@ public class SafeHouseController {
         String username = json.get("username");
         String password = json.get("password");
 
-        System.out.println(username + ": " + password );
+        System.out.println(username + ": " + password);
 
         System.out.println("Username: " + username);
         System.out.println("Password: " + password);
