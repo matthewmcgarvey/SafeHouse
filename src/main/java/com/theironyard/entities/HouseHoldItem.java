@@ -10,13 +10,13 @@ public class HouseHoldItem {
     @GeneratedValue
     private int id;
 
-    @Column(updatable = false, insertable = false, nullable = false)
-    private int houseId;
+    @Column(nullable = false)
+    private Integer houseId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Item itemInfo;
 
-    public HouseHoldItem(int houseId, Item itemInfo) {
+    public HouseHoldItem(Integer houseId, Item itemInfo) {
         this.houseId = houseId;
         this.itemInfo = itemInfo;
     }

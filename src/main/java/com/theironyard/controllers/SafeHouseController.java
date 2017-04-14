@@ -29,9 +29,9 @@ public class SafeHouseController {
     @Autowired
     private HouseRepository houses;
     @Autowired
-    private static HouseHoldItemRepository houseHoldItems;
+    private HouseHoldItemRepository houseHoldItems;
     @Autowired
-    private static ItemRepository items;
+    private ItemRepository items;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -116,12 +116,10 @@ public class SafeHouseController {
 
     // add item to house Todo
     @RequestMapping(path = "/item", method = RequestMethod.POST)
-    public void addItem(@RequestBody Map<String, Object> json) {
-        Integer houseId = (Integer) json.get("houseName");
-        String itemName = (String) json.get("itemName");
-        Item item = new Item(itemName);
-        HouseHoldItem hhItem = new HouseHoldItem(houseId, item);
-        items.save(item);
+    public void addItem(@RequestBody Map<String, String> json) {
+        Integer houseId = Integer.valueOf(json.get("houseId"));
+        String itemName = json.get("itemName");
+        HouseHoldItem hhItem = new HouseHoldItem(houseId, new Item(itemName));
         houseHoldItems.save(hhItem);
     }
 
