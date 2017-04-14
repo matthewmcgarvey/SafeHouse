@@ -109,14 +109,14 @@ public class SafeHouseController {
 
     // add item to house Todo
     @RequestMapping(path = "/item", method = RequestMethod.POST)
-    public void addItem(@RequestBody Map<String, String> json) {
-        String username = json.get("username");
-        String houseName = json.get("houseName");
-        String itemName = json.get("itemName");
+    public void addItem(@RequestBody Map<String, Object> json) {
+        String username = (String) json.get("username");
+        String houseName = (String) json.get("houseName");
+//        String itemName = json.get("itemName");
 
         House house = houses.findOneByNameAndUser_Name(houseName, username);
         System.out.println(house.getName());
-        house.addItem(new Item(itemName));
+//        house.addItem(new Item(itemName));
         houses.save(house);
     }
 
