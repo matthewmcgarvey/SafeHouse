@@ -3,20 +3,15 @@ package com.theironyard.controllers;
 
 import com.theironyard.entities.House;
 import com.theironyard.entities.Item;
+import com.theironyard.entities.SearchItem;
 import com.theironyard.entities.User;
 import com.theironyard.services.HouseRepository;
 import com.theironyard.services.UserRepository;
-import com.theironyard.api.AmazonUtil;
-import org.json.JSONObject;
-import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.Map;
 
 @CrossOrigin
@@ -33,15 +28,24 @@ public class SafeHouseController {
     public ResponseEntity<?> addUser(@RequestBody Map<String, String> json) {
         String username = json.get("username");
         String password = json.get("password");
+        String password2 = json.get("password2");
+
+        if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
+            return new ResponseEntity<>("Username and password must not be empty.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (!password.equals(password2)) {
+            return new ResponseEntity<>("Passwords do not match.", HttpStatus.BAD_REQUEST);
+        }
+
+        User user = new User(username, password);
 
         try {
-            User user = new User(username, password); // throws IllegalArgumentException on bad UN or PW
             users.save(user);
             return new ResponseEntity<>(user, HttpStatus.OK);
-        } catch (DataIntegrityViolationException | IllegalArgumentException e) {
-            return new ResponseEntity<>("Invalid username or password.", HttpStatus.BAD_REQUEST);
+        } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<>("Invalid username or password", HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
             return new ResponseEntity<>("Problem", HttpStatus.BAD_REQUEST);
         }
     }
@@ -53,7 +57,7 @@ public class SafeHouseController {
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("Unable to find user", HttpStatus.BAD_REQUEST);
     }
 
     // user login
@@ -64,10 +68,8 @@ public class SafeHouseController {
 
         System.out.println(username + ": " + password);
 
-        System.out.println("Username: " + username);
-        System.out.println("Password: " + password);
-
-        if ((username != null && !username.isEmpty()) && (password != null && !password.isEmpty())) {
+        if ((username != null && !username.isEmpty()) && 
+                (password != null && !password.isEmpty())) {
             User user = users.findOneByName(username);
             if (user != null) {
                 if (user.verifyPassword(password)) {
@@ -90,7 +92,7 @@ public class SafeHouseController {
             houses.save(house);
             return new ResponseEntity<>(house, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Unable to find user", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -102,7 +104,7 @@ public class SafeHouseController {
         if (house != null) {
             return new ResponseEntity<>(house, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("Unable to find house", HttpStatus.BAD_REQUEST);
     }
 
     // remove a house
@@ -125,15 +127,13 @@ public class SafeHouseController {
     }
 
     // remove item from house Todo
-    @RequestMapping(path = "/item", method = RequestMethod.DELETE)
-    public void deleteItem(@RequestBody Map<String, String> json) {
-        System.out.println(json);
+    @RequestMapping(path = "/item/{itemId}", method = RequestMethod.DELETE)
+    public void deleteItem(@PathVariable Integer itemId) {
     }
 
     //Search Amazon Product API ToDo
-
-    @RequestMapping(path = "/items/{keywords}/{category}", method = RequestMethod.GET)
-    public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category) throws Exception {
-        return AmazonUtil.lookupItem(keywords, category);
+    @RequestMapping(path = "/items/{category}/{keywords}/{page}", method = RequestMethod.GET)
+    public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category, @PathVariable String page) throws Exception {
+        return SearchItem.lookUpItem(keywords, category, page);
     }
 }
