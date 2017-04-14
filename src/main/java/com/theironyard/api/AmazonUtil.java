@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,7 +61,7 @@ public class AmazonUtil {
                     JSONObject item = (JSONObject) itemArray.get(i);
                     String brand;
                     String model;
-                    int upc;
+                    BigInteger upc;
                     String imageUrl;
 
                     String title = item.getJSONObject("ItemAttributes").getString("Title");
@@ -78,9 +79,9 @@ public class AmazonUtil {
                     }
 
                     try {
-                        upc = item.getJSONObject("ItemAttributes").getInt("UPC");
+                        upc = item.getJSONObject("ItemAttributes").getBigInteger("UPC");
                     } catch (Exception noUpc) {
-                        upc = 000000000000;
+                        upc = BigInteger.valueOf(0);
                     }
 
                     try {
