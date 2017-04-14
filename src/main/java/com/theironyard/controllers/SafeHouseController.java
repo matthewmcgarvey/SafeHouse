@@ -3,10 +3,10 @@ package com.theironyard.controllers;
 
 import com.theironyard.entities.House;
 import com.theironyard.entities.Item;
+import com.theironyard.entities.SearchItem;
 import com.theironyard.entities.User;
 import com.theironyard.services.HouseRepository;
 import com.theironyard.services.UserRepository;
-import com.theironyard.api.AmazonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -126,8 +126,8 @@ public class SafeHouseController {
     }
 
     //Search Amazon Product API ToDo
-    @RequestMapping(path = "/items/{category}/{keywords}", method = RequestMethod.GET)
-    public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category) throws Exception {
-        return AmazonUtil.lookupItem(keywords, category);
+    @RequestMapping(path = "/items/{category}/{keywords}/{page}", method = RequestMethod.GET)
+    public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category, @PathVariable String page) throws Exception {
+        return SearchItem.lookUpItem(keywords, category, page);
     }
 }
