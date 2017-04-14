@@ -4,9 +4,6 @@ import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.Map;
-
 public class RecallAPI {
     public Integer recallNumber;
     public String recallURL;

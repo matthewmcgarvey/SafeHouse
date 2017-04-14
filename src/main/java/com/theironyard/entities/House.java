@@ -1,5 +1,8 @@
 package com.theironyard.entities;
 
+import com.theironyard.services.HouseHoldItemRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +19,10 @@ public class House {
     private String name;
 
     @ManyToOne
-    User user;
+    private User user;
 
-    @OneToMany(cascade = CascadeType.ALL) // cascades to save items
-    @JoinTable(name = "household_items")  // creates a join table that links house id to item id
-    private List<Item> items = new ArrayList<>();
+    @Autowired
+    private static HouseHoldItemRepository houseHoldItems;
 
     public House(String name, User user) {
         this.name = name;
@@ -45,15 +47,15 @@ public class House {
         this.name = name;
     }
 
-    public List<Item> getItems() {
-        return items;
+    public User getUser() {
+        return user;
     }
 
-    public void setItems(List<Item> items) {
-        this.items = items;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public void addItem(Item item) {
-        this.items.add(item);
+        houseHoldItems.save(new HouseHoldItem(this.id, item));
     }
 }
