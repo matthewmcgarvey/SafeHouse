@@ -2,9 +2,12 @@ package com.theironyard.controllers;
 
 
 import com.theironyard.entities.House;
+import com.theironyard.entities.HouseHoldItem;
 import com.theironyard.entities.Item;
 import com.theironyard.entities.User;
+import com.theironyard.services.HouseHoldItemRepository;
 import com.theironyard.services.HouseRepository;
+import com.theironyard.services.ItemRepository;
 import com.theironyard.services.UserRepository;
 import com.theironyard.api.AmazonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,10 @@ public class SafeHouseController {
     private UserRepository users;
     @Autowired
     private HouseRepository houses;
+    @Autowired
+    private static HouseHoldItemRepository houseHoldItems;
+    @Autowired
+    private static ItemRepository items;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -110,14 +117,12 @@ public class SafeHouseController {
     // add item to house Todo
     @RequestMapping(path = "/item", method = RequestMethod.POST)
     public void addItem(@RequestBody Map<String, Object> json) {
-        String username = (String) json.get("username");
-        String houseName = (String) json.get("houseName");
-//        String itemName = json.get("itemName");
-
-        House house = houses.findOneByNameAndUser_Name(houseName, username);
-        System.out.println(house.getName());
-//        house.addItem(new Item(itemName));
-        houses.save(house);
+        Integer houseId = (Integer) json.get("houseName");
+        String itemName = (String) json.get("itemName");
+        Item item = new Item(itemName);
+        HouseHoldItem hhItem = new HouseHoldItem(houseId, item);
+        items.save(item);
+        houseHoldItems.save(hhItem);
     }
 
     // remove item from house Todo

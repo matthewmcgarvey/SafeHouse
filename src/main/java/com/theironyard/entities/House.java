@@ -2,6 +2,7 @@ package com.theironyard.entities;
 
 import com.theironyard.services.HouseHoldItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -20,9 +21,6 @@ public class House {
 
     @ManyToOne
     private User user;
-
-    @Autowired
-    private static HouseHoldItemRepository houseHoldItems;
 
     public House(String name, User user) {
         this.name = name;
@@ -53,9 +51,5 @@ public class House {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public void addItem(Item item) {
-        houseHoldItems.save(new HouseHoldItem(this.id, item));
     }
 }
