@@ -2,7 +2,6 @@ package com.theironyard.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.mindrot.jbcrypt.BCrypt;
 
 import javax.persistence.*;
 
@@ -51,9 +50,5 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public boolean verifyPassword(String password) {
-        return BCrypt.checkpw(password, this.password);
     }
 }

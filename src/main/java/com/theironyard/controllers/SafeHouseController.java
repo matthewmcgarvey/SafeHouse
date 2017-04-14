@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
@@ -22,6 +25,8 @@ public class SafeHouseController {
     private UserRepository users;
     @Autowired
     private HouseRepository houses;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // register a new user
     @RequestMapping(path = "/users", method = RequestMethod.POST)
@@ -38,16 +43,25 @@ public class SafeHouseController {
             return new ResponseEntity<>("Passwords do not match.", HttpStatus.BAD_REQUEST);
         }
 
-        User user = new User(username, password);
+        User user = new User(username, bCryptPasswordEncoder.encode(password));
 
         try {
             users.save(user);
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>("Invalid username or password", HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Problem", HttpStatus.BAD_REQUEST);
+        } 
+    }
+
+    @RequestMapping(path = "/users/current", method = RequestMethod.GET)
+    public ResponseEntity<?> currentUser() {
+        Authentication u = SecurityContextHolder.getContext().getAuthentication();
+        String name = u.getName();
+        User user = users.findOneByName(name);
+        if (user != null) {
+            return new ResponseEntity<>(user, HttpStatus.OK);
         }
+        return new ResponseEntity<Object>("Invalid token.", HttpStatus.BAD_REQUEST);
     }
 
     // get user
@@ -58,26 +72,6 @@ public class SafeHouseController {
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
         return new ResponseEntity<>("Unable to find user", HttpStatus.BAD_REQUEST);
-    }
-
-    // user login
-    @RequestMapping(path = "/login", method = RequestMethod.POST)
-    public ResponseEntity<?> login(@RequestBody Map<String, String> json) {
-        String username = json.get("username");
-        String password = json.get("password");
-
-        System.out.println(username + ": " + password);
-
-        if ((username != null && !username.isEmpty()) && 
-                (password != null && !password.isEmpty())) {
-            User user = users.findOneByName(username);
-            if (user != null) {
-                if (user.verifyPassword(password)) {
-                    return new ResponseEntity<>(user, HttpStatus.OK);
-                }
-            }
-        }
-        return new ResponseEntity<>("Bad login.", HttpStatus.UNAUTHORIZED);
     }
 
     // add a new house
