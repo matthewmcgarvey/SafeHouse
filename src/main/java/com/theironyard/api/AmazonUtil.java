@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
@@ -96,14 +97,14 @@ public class AmazonUtil {
 
                     try {
                         imageUrl = item.getJSONObject("LargeImage").getString("URL");
-                    } catch (Exception noLrgImg){
+                    } catch (Exception noLrgImg) {
                         try {
                             imageUrl = item.getJSONObject("ImageSets")
                                     .getJSONObject("ImageSet")
                                     .getJSONObject("LargeImage")
                                     .getString("URL");
 
-                        } catch (Exception noImgSetObject){
+                        } catch (Exception noImgSetObject) {
                             imageUrl = item.getJSONObject("ImageSets")
                                     .getJSONArray("ImageSet")
                                     .getJSONObject(0)
@@ -111,7 +112,7 @@ public class AmazonUtil {
                                     .getString("URL");
                         }
                     }
-
+                    
                     SearchItem searchItem = new SearchItem(title, brand , model, upc, imageUrl, asin);
                     searchItemResults.add(searchItem);
                 }

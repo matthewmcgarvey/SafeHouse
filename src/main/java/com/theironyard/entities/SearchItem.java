@@ -29,7 +29,7 @@ public class SearchItem {
         this.asin = asin;
     }
 
-    public static ResponseEntity<?> lookUpItem(String keywords, String category, String page){
+    public static ResponseEntity<?> lookUpItem(String keywords, String category, String page) {
         return AmazonUtil.lookUpItem(keywords, category, page);
     }
 

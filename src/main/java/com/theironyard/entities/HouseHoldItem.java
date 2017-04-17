@@ -14,11 +14,11 @@ public class HouseHoldItem {
     private Integer houseId;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    private Item itemInfo;
+    private Item item;
 
-    public HouseHoldItem(Integer houseId, Item itemInfo) {
+    public HouseHoldItem(Integer houseId, Item item) {
         this.houseId = houseId;
-        this.itemInfo = itemInfo;
+        this.item = item;
     }
 
     public HouseHoldItem() {}
@@ -39,11 +39,11 @@ public class HouseHoldItem {
         this.houseId = houseId;
     }
 
-    public Item getItemInfo() {
-        return itemInfo;
+    public Item getItem() {
+        return item;
     }
 
-    public void setItemInfo(Item itemInfo) {
-        this.itemInfo = itemInfo;
+    public void setItem(Item item) {
+        this.item = item;
     }
 }

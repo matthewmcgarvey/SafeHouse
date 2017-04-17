@@ -125,12 +125,15 @@ public class SafeHouseController {
 
     // remove item from house Todo
     @RequestMapping(path = "/item/{itemId}", method = RequestMethod.DELETE)
-    public void deleteItem(@PathVariable Integer itemId) {
+    public void deleteItem(@PathVariable Integer itemId, @RequestBody Map<String, String> json) {
+        Integer houseId = Integer.valueOf(json.get("houseId"));
+
+        houseHoldItems.deleteByHouseIdAndItem_Id(houseId, itemId);
     }
 
     //Search Amazon Product API ToDo
     @RequestMapping(path = "/items/{category}/{keywords}/{page}", method = RequestMethod.GET)
-    public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category, @PathVariable String page) throws Exception {
+    public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category, @PathVariable String page) {
         return SearchItem.lookUpItem(keywords, category, page);
     }
 }
