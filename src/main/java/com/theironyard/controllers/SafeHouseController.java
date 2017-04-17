@@ -93,6 +93,9 @@ public class SafeHouseController {
         User user = users.findOne(userId);
         if (user != null) {
             House house = new House(houseName);
+            if (user.getHouses().size() == 0) {
+                house.setDefaultHouse(true);
+            }
             user.addHouse(house);
             users.save(user);
             return new ResponseEntity<>(house, HttpStatus.OK);
