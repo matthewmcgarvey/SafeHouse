@@ -22,7 +22,7 @@ public class AmazonUtil {
     private static String AWS_SECRET_KEY = System.getenv("AWS_SECRET_KEY");
     private static final String ENDPOINT = "ecs.amazonaws.com";
 
-    public static ResponseEntity<?>     lookUpItem(String keywords, String searchCategory, String page) {
+    public static String lookUpItem(String keywords, String searchCategory, String page) {
 
         SignedRequestsHelper helper;
 
@@ -30,7 +30,7 @@ public class AmazonUtil {
             helper = SignedRequestsHelper.getInstance(ENDPOINT, AWS_ACCESS_KEY_ID, AWS_SECRET_KEY);
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>("Problem with the search request", HttpStatus.BAD_REQUEST);
+            return "Problem with the request helper";
         }
 
         //Load search parameters
@@ -44,88 +44,102 @@ public class AmazonUtil {
         params.put("Keywords", keywords); //Keyword(s) entered by user
         params.put("AssociateTag", "safe0cd-20");
 
-        try {
+//        try {
+//
+//            URL url = new URL(helper.sign(params));
+//            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+//            String strTemp;
+//
+//            while (null != (strTemp = br.readLine())) {
+//                JSONObject xmlJSONObj = XML.toJSONObject(strTemp);
+//                JSONArray itemArray = xmlJSONObj.getJSONObject("ItemSearchResponse")
+//                        .getJSONObject("Items")
+//                        .getJSONArray("Item");
+//
+//                List<SearchItem> searchItemResults = new ArrayList<>();
+//
+//                for (int i = 0; i < itemArray.length(); i++) {
+//
+//                    JSONObject item = (JSONObject) itemArray.get(i);
+//                    String brand;
+//                    String model;
+//                    BigInteger upc;
+//                    String imageUrl;
+//                    String asin;
+//
+//                    String title = item.getJSONObject("ItemAttributes").getString("Title");
+//
+//                    try {
+//                        asin = item.getString("ASIN");
+//                    } catch (Exception asinTypeInt) {
+//                        Integer asinInt = item.getInt("ASIN");
+//                        asin = asinInt.toString();
+//                    }
+//
+//
+//                    try {
+//                        brand = item.getJSONObject("ItemAttributes").getString("Brand");
+//                    } catch (Exception noBrand) {
+//                        brand = "Brand not available";
+//                    }
+//
+//                    try {
+//                        model = item.getJSONObject("ItemAttributes").getString("Model");
+//                    } catch (Exception noModel) {
+//                        model = "Model not available";
+//                    }
+//
+//                    try {
+//                        upc = item.getJSONObject("ItemAttributes").getBigInteger("UPC");
+//                    } catch (Exception noUpc) {
+//                        upc = BigInteger.valueOf(0);
+//                    }
+//
+//                    try {
+//                        imageUrl = item.getJSONObject("LargeImage").getString("URL");
+//                    } catch (Exception noLrgImg) {
+//                        try {
+//                            imageUrl = item.getJSONObject("ImageSets")
+//                                    .getJSONObject("ImageSet")
+//                                    .getJSONObject("LargeImage")
+//                                    .getString("URL");
+//
+//                        } catch (Exception noImgSetObject) {
+//                            imageUrl = item.getJSONObject("ImageSets")
+//                                    .getJSONArray("ImageSet")
+//                                    .getJSONObject(0)
+//                                    .getJSONObject("LargeImage")
+//                                    .getString("URL");
+//                        }
+//                    }
+//
+//                    SearchItem searchItem = new SearchItem(title, brand , model, upc, imageUrl, asin);
+//                    searchItemResults.add(searchItem);
+//                }
+//
+//                return new ResponseEntity<>(searchItemResults, HttpStatus.OK);
+//            }
+//
+//        } catch (Exception ex) {
+//
+//            ex.printStackTrace();
+//            return new ResponseEntity<>("Problem with the search request", HttpStatus.BAD_REQUEST);
+//        }
+//
+//        return new ResponseEntity<>("An unexpected error occurred", HttpStatus.EXPECTATION_FAILED);
+//    }
 
+        try {
             URL url = new URL(helper.sign(params));
             BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
             String strTemp;
-
             while (null != (strTemp = br.readLine())) {
                 JSONObject xmlJSONObj = XML.toJSONObject(strTemp);
-                JSONArray itemArray = xmlJSONObj.getJSONObject("ItemSearchResponse")
-                        .getJSONObject("Items")
-                        .getJSONArray("Item");
-
-                List<SearchItem> searchItemResults = new ArrayList<>();
-
-                for (int i = 0; i < itemArray.length(); i++) {
-
-                    JSONObject item = (JSONObject) itemArray.get(i);
-                    String brand;
-                    String model;
-                    BigInteger upc;
-                    String imageUrl;
-                    String asin;
-
-                    String title = item.getJSONObject("ItemAttributes").getString("Title");
-
-                    try {
-                        asin = item.getString("ASIN");
-                    } catch (Exception asinTypeInt) {
-                        Integer asinInt = item.getInt("ASIN");
-                        asin = asinInt.toString();
-                    }
-
-
-                    try {
-                        brand = item.getJSONObject("ItemAttributes").getString("Brand");
-                    } catch (Exception noBrand) {
-                        brand = "Brand not available";
-                    }
-
-                    try {
-                        model = item.getJSONObject("ItemAttributes").getString("Model");
-                    } catch (Exception noModel) {
-                        model = "Model not available";
-                    }
-
-                    try {
-                        upc = item.getJSONObject("ItemAttributes").getBigInteger("UPC");
-                    } catch (Exception noUpc) {
-                        upc = BigInteger.valueOf(0);
-                    }
-
-                    try {
-                        imageUrl = item.getJSONObject("LargeImage").getString("URL");
-                    } catch (Exception noLrgImg) {
-                        try {
-                            imageUrl = item.getJSONObject("ImageSets")
-                                    .getJSONObject("ImageSet")
-                                    .getJSONObject("LargeImage")
-                                    .getString("URL");
-
-                        } catch (Exception noImgSetObject) {
-                            imageUrl = item.getJSONObject("ImageSets")
-                                    .getJSONArray("ImageSet")
-                                    .getJSONObject(0)
-                                    .getJSONObject("LargeImage")
-                                    .getString("URL");
-                        }
-                    }
-                    
-                    SearchItem searchItem = new SearchItem(title, brand , model, upc, imageUrl, asin);
-                    searchItemResults.add(searchItem);
-                }
-
-                return new ResponseEntity<>(searchItemResults, HttpStatus.OK);
+                String jsonFormattedString = xmlJSONObj.toString(0);
+                return jsonFormattedString;
             }
 
         } catch (Exception ex) {
-
-            ex.printStackTrace();
-            return new ResponseEntity<>("Problem with the search request", HttpStatus.BAD_REQUEST);
+            
         }
-
-        return new ResponseEntity<>("An unexpected error occurred", HttpStatus.EXPECTATION_FAILED);
     }
-}
