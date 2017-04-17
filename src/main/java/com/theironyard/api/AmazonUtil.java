@@ -6,8 +6,10 @@ import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,13 +59,23 @@ public class AmazonUtil {
                 List<SearchItem> searchItemResults = new ArrayList<>();
 
                 for (int i = 0; i < itemArray.length(); i++) {
+
                     JSONObject item = (JSONObject) itemArray.get(i);
                     String brand;
                     String model;
-                    int upc;
+                    BigInteger upc;
                     String imageUrl;
+                    String asin;
 
                     String title = item.getJSONObject("ItemAttributes").getString("Title");
+
+                    try {
+                        asin = item.getString("ASIN");
+                    } catch (Exception asinTypeInt) {
+                        Integer asinInt = item.getInt("ASIN");
+                        asin = asinInt.toString();
+                    }
+
 
                     try {
                         brand = item.getJSONObject("ItemAttributes").getString("Brand");
@@ -78,21 +90,21 @@ public class AmazonUtil {
                     }
 
                     try {
-                        upc = item.getJSONObject("ItemAttributes").getInt("UPC");
+                        upc = item.getJSONObject("ItemAttributes").getBigInteger("UPC");
                     } catch (Exception noUpc) {
-                        upc = 000000000000;
+                        upc = BigInteger.valueOf(0);
                     }
 
                     try {
                         imageUrl = item.getJSONObject("LargeImage").getString("URL");
-                    } catch (Exception noLrgImg){
+                    } catch (Exception noLrgImg) {
                         try {
                             imageUrl = item.getJSONObject("ImageSets")
                                     .getJSONObject("ImageSet")
                                     .getJSONObject("LargeImage")
                                     .getString("URL");
 
-                        } catch (Exception noImgSetObject){
+                        } catch (Exception noImgSetObject) {
                             imageUrl = item.getJSONObject("ImageSets")
                                     .getJSONArray("ImageSet")
                                     .getJSONObject(0)
@@ -100,8 +112,8 @@ public class AmazonUtil {
                                     .getString("URL");
                         }
                     }
-
-                    SearchItem searchItem = new SearchItem(title, brand , model, upc, imageUrl);
+                    
+                    SearchItem searchItem = new SearchItem(title, brand , model, upc, imageUrl, asin);
                     searchItemResults.add(searchItem);
                 }
 

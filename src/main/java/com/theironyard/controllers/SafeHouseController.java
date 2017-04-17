@@ -2,10 +2,13 @@ package com.theironyard.controllers;
 
 
 import com.theironyard.entities.House;
+import com.theironyard.entities.HouseHoldItem;
 import com.theironyard.entities.Item;
 import com.theironyard.entities.SearchItem;
 import com.theironyard.entities.User;
+import com.theironyard.services.HouseHoldItemRepository;
 import com.theironyard.services.HouseRepository;
+import com.theironyard.services.ItemRepository;
 import com.theironyard.services.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,6 +28,10 @@ public class SafeHouseController {
     private UserRepository users;
     @Autowired
     private HouseRepository houses;
+    @Autowired
+    private HouseHoldItemRepository houseHoldItems;
+    @Autowired
+    private ItemRepository items;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -110,24 +117,23 @@ public class SafeHouseController {
     // add item to house Todo
     @RequestMapping(path = "/item", method = RequestMethod.POST)
     public void addItem(@RequestBody Map<String, String> json) {
-        String username = json.get("username");
-        String houseName = json.get("houseName");
+        Integer houseId = Integer.valueOf(json.get("houseId"));
         String itemName = json.get("itemName");
-
-        House house = houses.findOneByNameAndUser_Name(houseName, username);
-        System.out.println(house.getName());
-        house.addItem(new Item(itemName));
-        houses.save(house);
+        HouseHoldItem hhItem = new HouseHoldItem(houseId, new Item(itemName));
+        houseHoldItems.save(hhItem);
     }
 
     // remove item from house Todo
     @RequestMapping(path = "/item/{itemId}", method = RequestMethod.DELETE)
-    public void deleteItem(@PathVariable Integer itemId) {
+    public void deleteItem(@PathVariable Integer itemId, @RequestBody Map<String, String> json) {
+        Integer houseId = Integer.valueOf(json.get("houseId"));
+
+        houseHoldItems.deleteByHouseIdAndItem_Id(houseId, itemId);
     }
 
     //Search Amazon Product API ToDo
     @RequestMapping(path = "/items/{category}/{keywords}/{page}", method = RequestMethod.GET)
-    public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category, @PathVariable String page) throws Exception {
+    public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category, @PathVariable String page) {
         return SearchItem.lookUpItem(keywords, category, page);
     }
 }
