@@ -9,4 +9,6 @@ import java.util.List;
 public interface HouseRepository extends CrudRepository<House, Integer> {
     @Transactional
     void deleteByIdAndUser_Id(Integer houseId, Integer userId);
+
+    List<House> findByUser_Id(Integer userId);
 }

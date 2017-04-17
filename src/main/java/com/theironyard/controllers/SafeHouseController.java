@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
@@ -95,6 +96,17 @@ public class SafeHouseController {
             return new ResponseEntity<>(house, HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Unable to find user", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // get user's houses
+    @RequestMapping(path = "/users/{userId}/houses", method = RequestMethod.GET)
+    public ResponseEntity<?> getHouses(@PathVariable Integer userId) {
+        List<House> userHouses = houses.findByUser_Id(userId);
+        if (userHouses != null) {
+            return new ResponseEntity<>(userHouses, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("No houses found by that user.", HttpStatus.BAD_REQUEST);
         }
     }
 
