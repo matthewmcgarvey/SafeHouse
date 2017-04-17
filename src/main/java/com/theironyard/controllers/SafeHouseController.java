@@ -130,7 +130,7 @@ public class SafeHouseController {
 
     //Search Amazon Product API ToDo
     @RequestMapping(path = "/items/{category}/{keywords}/{page}", method = RequestMethod.GET)
-    public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category, @PathVariable String page) throws Exception {
+    public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category, @PathVariable String page) {
         return SearchItem.lookUpItem(keywords, category, page);
     }
 }
