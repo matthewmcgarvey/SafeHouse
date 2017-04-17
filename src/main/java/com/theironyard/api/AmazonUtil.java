@@ -58,13 +58,23 @@ public class AmazonUtil {
                 List<SearchItem> searchItemResults = new ArrayList<>();
 
                 for (int i = 0; i < itemArray.length(); i++) {
+
                     JSONObject item = (JSONObject) itemArray.get(i);
                     String brand;
                     String model;
                     BigInteger upc;
                     String imageUrl;
+                    String asin;
 
                     String title = item.getJSONObject("ItemAttributes").getString("Title");
+
+                    try {
+                        asin = item.getString("ASIN");
+                    } catch (Exception asinTypeInt) {
+                        Integer asinInt = item.getInt("ASIN");
+                        asin = asinInt.toString();
+                    }
+
 
                     try {
                         brand = item.getJSONObject("ItemAttributes").getString("Brand");
@@ -102,7 +112,7 @@ public class AmazonUtil {
                         }
                     }
 
-                    SearchItem searchItem = new SearchItem(title, brand , model, upc, imageUrl);
+                    SearchItem searchItem = new SearchItem(title, brand , model, upc, imageUrl, asin);
                     searchItemResults.add(searchItem);
                 }
 
