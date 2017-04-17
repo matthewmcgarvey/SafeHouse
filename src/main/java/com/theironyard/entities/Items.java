@@ -26,4 +26,8 @@ public final class Items {
         hhRepo.deleteByHouseIdAndItem_Id(houseId, itemId);
     }
 
+    public static void deleteByHouseId(Integer houseId) {
+        hhRepo.deleteByHouseId(houseId);
+    }
+
 }

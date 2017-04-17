@@ -122,11 +122,7 @@ public class SafeHouseController {
     @RequestMapping(path = "/users/{userId}/houses/{houseId}", method = RequestMethod.DELETE)
     public void deleteHouse(@PathVariable Integer userId,
                             @PathVariable Integer houseId) {
-        User user = Users.findOne(userId);
-        if (user != null) {
-            user.getHouses().removeIf(house -> house.getId() == houseId);
-            Users.save(user);
-        }
+        Users.deleteHouse(userId, houseId);
     }
 
     // get items from a user's house Todo

@@ -18,7 +18,17 @@ public final class Users {
         return userRepo.findByName(name);
     }
 
-    public static User findOne(Integer id) {
-        return userRepo.findOne(id);
+    public static User findOne(Integer userId) {
+        return userRepo.findOne(userId);
+    }
+
+    public static void deleteHouse(Integer userId, Integer houseId) {
+        User user = userRepo.findOne(userId);
+        if (user != null) {
+            Boolean success = user.getHouses().removeIf(house -> house.getId() == houseId);
+            if (success) {
+                Items.deleteByHouseId(houseId); // remove the household items that were in the house
+            }
+        }
     }
 }
