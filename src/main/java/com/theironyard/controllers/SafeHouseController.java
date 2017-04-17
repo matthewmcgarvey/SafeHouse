@@ -1,15 +1,8 @@
 package com.theironyard.controllers;
 
 
-import com.theironyard.entities.House;
-import com.theironyard.entities.HouseHoldItem;
-import com.theironyard.entities.Item;
-import com.theironyard.entities.SearchItem;
-import com.theironyard.entities.User;
+import com.theironyard.entities.*;
 import com.theironyard.services.HouseHoldItemRepository;
-import com.theironyard.services.HouseRepository;
-import com.theironyard.services.ItemRepository;
-import com.theironyard.services.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -26,14 +19,9 @@ import java.util.Map;
 @RestController
 public class SafeHouseController {
 
-    @Autowired
-    private UserRepository users;
-    @Autowired
-    private HouseRepository houses;
+    private Users users;
     @Autowired
     private HouseHoldItemRepository houseHoldItems;
-    @Autowired
-    private ItemRepository items;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -67,7 +55,7 @@ public class SafeHouseController {
     public ResponseEntity<?> currentUser() {
         Authentication u = SecurityContextHolder.getContext().getAuthentication();
         String name = u.getName();
-        User user = users.findOneByName(name);
+        User user = users.findByName(name);
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
