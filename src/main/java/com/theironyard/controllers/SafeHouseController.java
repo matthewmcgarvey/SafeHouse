@@ -62,6 +62,7 @@ public class SafeHouseController {
         }
     }
 
+    // view current users
     @RequestMapping(path = "/users/current", method = RequestMethod.GET)
     public ResponseEntity<?> currentUser() {
         Authentication u = SecurityContextHolder.getContext().getAuthentication();
@@ -99,7 +100,7 @@ public class SafeHouseController {
         }
     }
 
-    // get user's houses
+    // get a user's houses
     @RequestMapping(path = "/users/{userId}/houses", method = RequestMethod.GET)
     public ResponseEntity<?> getHouses(@PathVariable Integer userId) {
         List<House> userHouses = houses.findByUser_Id(userId);
@@ -110,7 +111,7 @@ public class SafeHouseController {
         }
     }
 
-    // get house
+    // get a user's house
     @RequestMapping(path = "/users/{userId}houses/{houseId}", method = RequestMethod.GET)
     public ResponseEntity<?> getHouse(@PathVariable Integer userId,
                                       @PathVariable Integer houseId) {
@@ -128,14 +129,24 @@ public class SafeHouseController {
         return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
     }
 
-    // remove a house
+    // remove a user's house
     @RequestMapping(path = "/users/{userId}/houses/{houseId}", method = RequestMethod.DELETE)
     public void deleteHouse(@PathVariable Integer userId,
                             @PathVariable Integer houseId) {
         houses.deleteByIdAndUser_Id(houseId, userId);
     }
 
-    // add item to house
+    @RequestMapping(path = "/users/{userId}/houses/{houseId}/items", method = RequestMethod.GET)
+    public ResponseEntity<?> getItems(@PathVariable Integer userId, @PathVariable Integer houseId) {
+        List<HouseHoldItem> houseItems = houseHoldItems.findByHouseId(houseId);
+        if (houseItems != null) {
+            return new ResponseEntity<>(houseItems, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Unable to find items for that house.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // add an item to a house
     @RequestMapping(path = "/users/{userId}/houses/{houseId}/items", method = RequestMethod.POST)
     public void addItem(@PathVariable Integer userId,
                         @PathVariable Integer houseId,
@@ -145,7 +156,7 @@ public class SafeHouseController {
         houseHoldItems.save(hhItem);
     }
 
-    // remove item from house
+    // remove an item from a house
     @RequestMapping(path = "/users/{userId}/houses/{houseId}/items/{itemId}", method = RequestMethod.DELETE)
     public void deleteItem(@PathVariable Integer userId,
                            @PathVariable Integer houseId,
@@ -153,7 +164,7 @@ public class SafeHouseController {
         houseHoldItems.deleteByHouseIdAndItem_Id(houseId, itemId);
     }
 
-    //Search Amazon Product API
+    // Search Amazon Product API
     @RequestMapping(path = "/items/{category}/{keywords}/{page}", method = RequestMethod.GET)
     public ResponseEntity<?> searchItems(@PathVariable String keywords,
                                          @PathVariable String category,
