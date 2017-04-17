@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Map;
 
 @CrossOrigin
@@ -57,7 +58,7 @@ public class SafeHouseController {
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>("Invalid username or password", HttpStatus.BAD_REQUEST);
-        } 
+        }
     }
 
     @RequestMapping(path = "/users/current", method = RequestMethod.GET)
@@ -72,9 +73,9 @@ public class SafeHouseController {
     }
 
     // get user
-    @RequestMapping(path = "/users/{id}", method = RequestMethod.GET)
-    public ResponseEntity<?> getUser(@PathVariable Integer id) {
-        User user = users.findOne(id);
+    @RequestMapping(path = "/users/{userId}", method = RequestMethod.GET)
+    public ResponseEntity<?> getUser(@PathVariable Integer userId) {
+        User user = users.findOne(userId);
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
@@ -82,12 +83,12 @@ public class SafeHouseController {
     }
 
     // add a new house
-    @RequestMapping(path = "/houses", method = RequestMethod.POST)
-    public ResponseEntity addHouse(@RequestBody Map<String, String> json) {
-        String username = json.get("username");
+    @RequestMapping(path = "/users/{userId}/houses", method = RequestMethod.POST)
+    public ResponseEntity addHouse(@PathVariable Integer userId,
+                                   @RequestBody Map<String, String> json) {
         String houseName = json.get("houseName");
 
-        User user = users.findOneByName(username);
+        User user = users.findOne(userId);
         if (user != null) {
             House house = new House(houseName, user);
             houses.save(house);
@@ -98,42 +99,53 @@ public class SafeHouseController {
     }
 
     // get house
-    @RequestMapping(path = "/houses/{houseId}", method = RequestMethod.GET)
-    public ResponseEntity<?> getHouse(@PathVariable Integer houseId) {
+    @RequestMapping(path = "/users/{userId}houses/{houseId}", method = RequestMethod.GET)
+    public ResponseEntity<?> getHouse(@PathVariable Integer userId,
+                                      @PathVariable Integer houseId) {
         House house = houses.findOne(houseId);
-
+        String errorMsg;
         if (house != null) {
-            return new ResponseEntity<>(house, HttpStatus.OK);
+            if (house.getUser().getId() == userId) {
+                return new ResponseEntity<>(house, HttpStatus.OK);
+            } else {
+                errorMsg = "Invalid house request.";
+            }
+        } else {
+            errorMsg = "Unable to find house.";
         }
-        return new ResponseEntity<>("Unable to find house", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
     }
 
     // remove a house
-    @RequestMapping(path = "/houses/{houseId}", method = RequestMethod.DELETE)
-    public void deleteHouse(@PathVariable Integer houseId) {
-        houses.delete(houseId);
+    @RequestMapping(path = "/users/{userId}/houses/{houseId}", method = RequestMethod.DELETE)
+    public void deleteHouse(@PathVariable Integer userId,
+                            @PathVariable Integer houseId) {
+        houses.deleteByIdAndUser_Id(houseId, userId);
     }
 
-    // add item to house Todo
-    @RequestMapping(path = "/item", method = RequestMethod.POST)
-    public void addItem(@RequestBody Map<String, String> json) {
-        Integer houseId = Integer.valueOf(json.get("houseId"));
+    // add item to house
+    @RequestMapping(path = "/users/{userId}/houses/{houseId}/items", method = RequestMethod.POST)
+    public void addItem(@PathVariable Integer userId,
+                        @PathVariable Integer houseId,
+                        @RequestBody Map<String, String> json) {
         String itemName = json.get("itemName");
         HouseHoldItem hhItem = new HouseHoldItem(houseId, new Item(itemName));
         houseHoldItems.save(hhItem);
     }
 
-    // remove item from house Todo
-    @RequestMapping(path = "/item/{itemId}", method = RequestMethod.DELETE)
-    public void deleteItem(@PathVariable Integer itemId, @RequestBody Map<String, String> json) {
-        Integer houseId = Integer.valueOf(json.get("houseId"));
-
+    // remove item from house
+    @RequestMapping(path = "/users/{userId}/houses/{houseId}/items/{itemId}", method = RequestMethod.DELETE)
+    public void deleteItem(@PathVariable Integer userId,
+                           @PathVariable Integer houseId,
+                           @PathVariable Integer itemId) {
         houseHoldItems.deleteByHouseIdAndItem_Id(houseId, itemId);
     }
 
-    //Search Amazon Product API ToDo
+    //Search Amazon Product API
     @RequestMapping(path = "/items/{category}/{keywords}/{page}", method = RequestMethod.GET)
-    public ResponseEntity<?> searchItems(@PathVariable String keywords, @PathVariable String category, @PathVariable String page) {
+    public ResponseEntity<?> searchItems(@PathVariable String keywords,
+                                         @PathVariable String category,
+                                         @PathVariable String page) {
         return SearchItem.lookUpItem(keywords, category, page);
     }
 }
