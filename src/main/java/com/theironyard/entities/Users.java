@@ -8,17 +8,17 @@ import org.springframework.stereotype.Component;
 @Component
 public final class Users {
     @Autowired
-    UserRepository userRepo;
+    private static UserRepository userRepo;
 
-    public void save(User user) throws DataIntegrityViolationException {
+    public static void save(User user) throws DataIntegrityViolationException {
         userRepo.save(user);
     }
 
-    public User findByName(String name) {
+    public static User findByName(String name) {
         return userRepo.findByName(name);
     }
 
-    public User findOne(Integer id) {
+    public static User findOne(Integer id) {
         return userRepo.findOne(id);
     }
 }
