@@ -3,14 +3,10 @@ package com.theironyard.entities;
 import com.theironyard.api.AmazonUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.XML;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.math.BigInteger;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,16 +36,13 @@ public class SearchItem {
 
     public static ResponseEntity<?> lookUpItem(String keywords, String category, String page) {
         String amazonResults = AmazonUtil.lookUpItem(keywords, category, page);
+        System.out.println(amazonResults);
 
         try {
 
-            URL url = new URL(amazonResults);
-            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-            String strTemp;
-
-            while (null != (strTemp = br.readLine())) {
-                JSONObject xmlJSONObj = XML.toJSONObject(strTemp);
-                JSONArray itemArray = xmlJSONObj.getJSONObject("ItemSearchResponse")
+            while (amazonResults.startsWith("{")) {
+                JSONObject json = new JSONObject(amazonResults);
+                JSONArray itemArray = json.getJSONObject("ItemSearchResponse")
                         .getJSONObject("Items")
                         .getJSONArray("Item");
 
@@ -110,7 +103,7 @@ public class SearchItem {
                         }
                     }
 
-                    SearchItem searchItem = new SearchItem(title, brand , model, upc, imageUrl, asin);
+                    SearchItem searchItem = new SearchItem(title, brand, model, upc, imageUrl, asin);
                     searchItemResults.add(searchItem);
                 }
 
@@ -118,24 +111,13 @@ public class SearchItem {
             }
 
         } catch (Exception ex) {
-
             ex.printStackTrace();
-            return new ResponseEntity<>("Problem with the search request", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("There is a problem with the search request. Invalid results.", HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>("An unexpected error occurred", HttpStatus.EXPECTATION_FAILED);
+        return new ResponseEntity<>("An unexpected error occurred. " + amazonResults, HttpStatus.EXPECTATION_FAILED);
     }
-
-
-
-
-
-
-
-
-
-//        return AmazonUtil.lookUpItem(keywords, category, page);
-    }
+}
 
 
 

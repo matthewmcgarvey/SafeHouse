@@ -128,18 +128,22 @@ public class AmazonUtil {
 //
 //        return new ResponseEntity<>("An unexpected error occurred", HttpStatus.EXPECTATION_FAILED);
 //    }
-
         try {
             URL url = new URL(helper.sign(params));
+
             BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
             String strTemp;
             while (null != (strTemp = br.readLine())) {
                 JSONObject xmlJSONObj = XML.toJSONObject(strTemp);
                 String jsonFormattedString = xmlJSONObj.toString(0);
+
                 return jsonFormattedString;
             }
 
         } catch (Exception ex) {
-            
+            return "Please verify search parameters";
         }
+
+        return "Please verify the status of the Product API";
     }
+}
