@@ -22,7 +22,7 @@ public class AmazonUtil {
     private static String AWS_SECRET_KEY = System.getenv("AWS_SECRET_KEY");
     private static final String ENDPOINT = "ecs.amazonaws.com";
 
-    public static ResponseEntity<?> lookUpItem(String keywords, String searchCategory, String page) {
+    public static ResponseEntity<?>     lookUpItem(String keywords, String searchCategory, String page) {
 
         SignedRequestsHelper helper;
 
