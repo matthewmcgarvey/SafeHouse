@@ -51,7 +51,7 @@ public class AmazonUtil {
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            return "Please verify search parameters";
+            return "Please verify search parameters or source XML response.";
         }
 
         return "Please verify the status of the Product API";

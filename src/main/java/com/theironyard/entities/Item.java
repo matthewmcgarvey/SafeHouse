@@ -1,7 +1,9 @@
 package com.theironyard.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.sql.Date;
 
 @Entity
 @Table(name = "items")
@@ -10,9 +12,6 @@ public class Item {
     @Id
     @GeneratedValue
     private int id;
-
-    @Column
-    private int upc;
 
     @Column(nullable = false)
     private String title;
@@ -24,10 +23,26 @@ public class Item {
     private String model;
 
     @Column
+    private String upc;
+
+    @Column
+    private String asin;
+
+    @Column
     private String imageUrl;
 
-    public Item(String title) {
+    @JsonIgnore
+    @Column
+    private java.sql.Date date;
+
+    public Item(String title, String brand, String model, String upc,  String asin, String imageUrl) {
         this.title = title;
+        this.brand = brand;
+        this.model = model;
+        this.upc = upc;
+        this.asin = asin;
+        this.imageUrl = imageUrl;
+        this.date = new java.sql.Date(new java.util.Date().getTime());
     }
 
     public Item() {}
@@ -40,11 +55,11 @@ public class Item {
         this.id = id;
     }
 
-    public int getUpc() {
+    public String getUpc() {
         return upc;
     }
 
-    public void setUpc(int upc) {
+    public void setUpc(String upc) {
         this.upc = upc;
     }
 
@@ -78,5 +93,21 @@ public class Item {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getAsin() {
+        return asin;
+    }
+
+    public void setAsin(String asin) {
+        this.asin = asin;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

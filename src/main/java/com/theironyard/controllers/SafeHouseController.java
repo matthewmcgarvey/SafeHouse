@@ -1,15 +1,6 @@
 package com.theironyard.controllers;
 
-
-import com.theironyard.entities.House;
-import com.theironyard.entities.HouseHoldItem;
-import com.theironyard.entities.Item;
-import com.theironyard.entities.SearchItem;
-import com.theironyard.entities.User;
-import com.theironyard.services.HouseHoldItemRepository;
-import com.theironyard.services.HouseRepository;
-import com.theironyard.services.ItemRepository;
-import com.theironyard.services.UserRepository;
+import com.theironyard.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -27,15 +18,11 @@ import java.util.Map;
 public class SafeHouseController {
 
     @Autowired
-    private UserRepository users;
-    @Autowired
-    private HouseRepository houses;
-    @Autowired
-    private HouseHoldItemRepository houseHoldItems;
-    @Autowired
-    private ItemRepository items;
-    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private Users users;
+    @Autowired
+    private Items items;
 
     // register a new user
     @RequestMapping(path = "/users", method = RequestMethod.POST)
@@ -67,7 +54,7 @@ public class SafeHouseController {
     public ResponseEntity<?> currentUser() {
         Authentication u = SecurityContextHolder.getContext().getAuthentication();
         String name = u.getName();
-        User user = users.findOneByName(name);
+        User user = users.findByName(name);
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
@@ -138,18 +125,14 @@ public class SafeHouseController {
     @RequestMapping(path = "/users/{userId}/houses/{houseId}", method = RequestMethod.DELETE)
     public void deleteHouse(@PathVariable Integer userId,
                             @PathVariable Integer houseId) {
-        User user = users.findOne(userId);
-        if (user != null) {
-            user.getHouses().removeIf(house -> house.getId() == houseId);
-            users.save(user);
-        }
+        users.deleteHouse(userId, houseId);
     }
 
-    // get items from a user's house Todo
+    // get items from a user's house
     @RequestMapping(path = "/users/{userId}/houses/{houseId}/items", method = RequestMethod.GET)
     public ResponseEntity<?> getItems(@PathVariable Integer userId,
                                       @PathVariable Integer houseId) {
-        List<HouseHoldItem> houseItems = houseHoldItems.findByHouseId(houseId);
+        List<HouseHoldItem> houseItems = items.findByHouseId(houseId);
         if (houseItems != null) {
             return new ResponseEntity<>(houseItems, HttpStatus.OK);
         } else {
@@ -162,9 +145,18 @@ public class SafeHouseController {
     public void addItem(@PathVariable Integer userId,
                         @PathVariable Integer houseId,
                         @RequestBody Map<String, String> json) {
-        String itemName = json.get("itemName");
-        HouseHoldItem hhItem = new HouseHoldItem(houseId, new Item(itemName));
-        houseHoldItems.save(hhItem);
+        String title = json.get("title");
+        String brand = json.get("brand");
+        String model = json.get("model");
+        String upc = json.get("upc");
+        String asin = json.get("asin");
+        String imageUrl = json.get("imageUrl");
+        Item item = items.findByAsin(asin);
+        if (item == null) {
+            item = new Item(title, brand, model, upc, asin, imageUrl);
+        }
+        HouseHoldItem hhItem = new HouseHoldItem(houseId, item);
+        items.save(hhItem);
     }
 
     // remove an item from a house
@@ -172,7 +164,7 @@ public class SafeHouseController {
     public void deleteItem(@PathVariable Integer userId,
                            @PathVariable Integer houseId,
                            @PathVariable Integer itemId) {
-        houseHoldItems.deleteByHouseIdAndItem_Id(houseId, itemId);
+        items.deleteByHouseIdAndItem_Id(houseId, itemId);
     }
 
     // Search Amazon Product API
