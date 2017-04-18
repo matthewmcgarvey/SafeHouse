@@ -19,13 +19,13 @@ public class SearchItem {
 
     public String model;
 
-    public BigInteger upc;
+    public String upc;
 
     public String imageUrl;
 
     public String asin;
 
-    public SearchItem(String title, String brand, String model, BigInteger upc, String imageUrl, String asin) {
+    public SearchItem(String title, String brand, String model, String upc, String imageUrl, String asin) {
         this.title = title;
         this.brand = brand;
         this.model = model;
@@ -53,7 +53,7 @@ public class SearchItem {
                     JSONObject item = (JSONObject) itemArray.get(i);
                     String brand;
                     String model;
-                    BigInteger upc;
+                    String upc;
                     String imageUrl;
                     String asin;
 
@@ -70,19 +70,20 @@ public class SearchItem {
                     try {
                         brand = item.getJSONObject("ItemAttributes").getString("Brand");
                     } catch (Exception noBrand) {
-                        brand = "Brand not available";
+                        brand = "N/A";
                     }
 
                     try {
                         model = item.getJSONObject("ItemAttributes").getString("Model");
                     } catch (Exception noModel) {
-                        model = "Model not available";
+                        model = "N/A";
                     }
 
                     try {
-                        upc = item.getJSONObject("ItemAttributes").getBigInteger("UPC");
+                        BigInteger upcInt = item.getJSONObject("ItemAttributes").getBigInteger("UPC");
+                        upc = upcInt.toString();
                     } catch (Exception noUpc) {
-                        upc = BigInteger.valueOf(0);
+                        upc = "000000000000";
                     }
 
                     try {
