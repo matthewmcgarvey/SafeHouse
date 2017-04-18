@@ -13,7 +13,7 @@ public class HouseHoldItem {
     @Column(nullable = false)
     private Integer houseId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private Item item;
 
     public HouseHoldItem(Integer houseId, Item item) {
