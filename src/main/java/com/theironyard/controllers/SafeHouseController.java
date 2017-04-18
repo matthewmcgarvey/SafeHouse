@@ -1,6 +1,5 @@
 package com.theironyard.controllers;
 
-
 import com.theironyard.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -20,6 +19,10 @@ public class SafeHouseController {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private Users users;
+    @Autowired
+    private Items items;
 
     // register a new user
     @RequestMapping(path = "/users", method = RequestMethod.POST)
@@ -39,7 +42,7 @@ public class SafeHouseController {
         User user = new User(username, bCryptPasswordEncoder.encode(password));
 
         try {
-            Users.save(user);
+            users.save(user);
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>("Invalid username or password", HttpStatus.BAD_REQUEST);
@@ -51,7 +54,7 @@ public class SafeHouseController {
     public ResponseEntity<?> currentUser() {
         Authentication u = SecurityContextHolder.getContext().getAuthentication();
         String name = u.getName();
-        User user = Users.findByName(name);
+        User user = users.findByName(name);
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
@@ -61,7 +64,7 @@ public class SafeHouseController {
     // get user
     @RequestMapping(path = "/users/{userId}", method = RequestMethod.GET)
     public ResponseEntity<?> getUser(@PathVariable Integer userId) {
-        User user = Users.findOne(userId);
+        User user = users.findOne(userId);
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
@@ -74,14 +77,14 @@ public class SafeHouseController {
                                    @RequestBody Map<String, String> json) {
         String houseName = json.get("houseName");
 
-        User user = Users.findOne(userId);
+        User user = users.findOne(userId);
         if (user != null) {
             House house = new House(houseName);
             if (user.getHouses().size() == 0) {
                 house.setDefaultHouse(true);
             }
             user.addHouse(house);
-            Users.save(user);
+            users.save(user);
             return new ResponseEntity<>(house, HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Unable to find user", HttpStatus.BAD_REQUEST);
@@ -91,7 +94,7 @@ public class SafeHouseController {
     // get a user's houses
     @RequestMapping(path = "/users/{userId}/houses", method = RequestMethod.GET)
     public ResponseEntity<?> getHouses(@PathVariable Integer userId) {
-        User user = Users.findOne(userId);
+        User user = users.findOne(userId);
         if (user != null) {
             return new ResponseEntity<>(user.getHouses(), HttpStatus.OK);
         } else {
@@ -103,7 +106,7 @@ public class SafeHouseController {
     @RequestMapping(path = "/users/{userId}houses/{houseId}", method = RequestMethod.GET)
     public ResponseEntity<?> getHouse(@PathVariable Integer userId,
                                       @PathVariable Integer houseId) {
-        User user = Users.findOne(userId);
+        User user = users.findOne(userId);
         String errorMsg;
         if (user != null) {
             House house = user.getHouses().stream().filter(h -> h.getId() == houseId).findFirst().orElse(null);
@@ -122,14 +125,14 @@ public class SafeHouseController {
     @RequestMapping(path = "/users/{userId}/houses/{houseId}", method = RequestMethod.DELETE)
     public void deleteHouse(@PathVariable Integer userId,
                             @PathVariable Integer houseId) {
-        Users.deleteHouse(userId, houseId);
+        users.deleteHouse(userId, houseId);
     }
 
-    // get items from a user's house Todo
+    // get items from a user's house
     @RequestMapping(path = "/users/{userId}/houses/{houseId}/items", method = RequestMethod.GET)
     public ResponseEntity<?> getItems(@PathVariable Integer userId,
                                       @PathVariable Integer houseId) {
-        List<HouseHoldItem> houseItems = Items.findByHouseId(houseId);
+        List<HouseHoldItem> houseItems = items.findByHouseId(houseId);
         if (houseItems != null) {
             return new ResponseEntity<>(houseItems, HttpStatus.OK);
         } else {
@@ -142,9 +145,14 @@ public class SafeHouseController {
     public void addItem(@PathVariable Integer userId,
                         @PathVariable Integer houseId,
                         @RequestBody Map<String, String> json) {
-        String itemName = json.get("itemName");
-        HouseHoldItem hhItem = new HouseHoldItem(houseId, new Item(itemName));
-        Items.save(hhItem);
+        String title = json.get("title");
+        String brand = json.get("brand");
+        String model = json.get("model");
+        String upc = json.get("upc");
+        String asin = json.get("asin");
+        String imageUrl = json.get("imageUrl");
+        HouseHoldItem hhItem = new HouseHoldItem(houseId, new Item(title, brand, model, upc, asin, imageUrl));
+        items.save(hhItem);
     }
 
     // remove an item from a house
@@ -152,7 +160,7 @@ public class SafeHouseController {
     public void deleteItem(@PathVariable Integer userId,
                            @PathVariable Integer houseId,
                            @PathVariable Integer itemId) {
-        Items.deleteByHouseIdAndItem_Id(houseId, itemId);
+        items.deleteByHouseIdAndItem_Id(houseId, itemId);
     }
 
     // Search Amazon Product API

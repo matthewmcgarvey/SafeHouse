@@ -1,6 +1,5 @@
 package com.theironyard.entities;
 
-
 import javax.persistence.*;
 
 @Entity
@@ -10,9 +9,6 @@ public class Item {
     @Id
     @GeneratedValue
     private int id;
-
-    @Column
-    private int upc;
 
     @Column(nullable = false)
     private String title;
@@ -24,10 +20,21 @@ public class Item {
     private String model;
 
     @Column
+    private String upc;
+
+    @Column
+    private String asin;
+
+    @Column
     private String imageUrl;
 
-    public Item(String title) {
+    public Item(String title, String brand, String model, String upc,  String asin, String imageUrl) {
         this.title = title;
+        this.brand = brand;
+        this.model = model;
+        this.upc = upc;
+        this.asin = asin;
+        this.imageUrl = imageUrl;
     }
 
     public Item() {}
@@ -40,11 +47,11 @@ public class Item {
         this.id = id;
     }
 
-    public int getUpc() {
+    public String getUpc() {
         return upc;
     }
 
-    public void setUpc(int upc) {
+    public void setUpc(String upc) {
         this.upc = upc;
     }
 
@@ -78,5 +85,13 @@ public class Item {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getAsin() {
+        return asin;
+    }
+
+    public void setAsin(String asin) {
+        this.asin = asin;
     }
 }

@@ -3,31 +3,39 @@ package com.theironyard.entities;
 import com.theironyard.services.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public final class Users {
-    @Autowired
-    private static UserRepository userRepo;
 
-    public static void save(User user) throws DataIntegrityViolationException {
+    private UserRepository userRepo;
+
+    @Autowired
+    Items items;
+
+    @Autowired
+    public Users(UserRepository userRepo) {
+        this.userRepo = userRepo;
+    }
+
+    public void save(User user) throws DataIntegrityViolationException {
         userRepo.save(user);
     }
 
-    public static User findByName(String name) {
+    public User findByName(String name) {
         return userRepo.findByName(name);
     }
 
-    public static User findOne(Integer userId) {
+    public User findOne(Integer userId) {
         return userRepo.findOne(userId);
     }
 
-    public static void deleteHouse(Integer userId, Integer houseId) {
+    public void deleteHouse(Integer userId, Integer houseId) {
         User user = userRepo.findOne(userId);
         if (user != null) {
             Boolean success = user.getHouses().removeIf(house -> house.getId() == houseId);
             if (success) {
-                Items.deleteByHouseId(houseId); // remove the household items that were in the house
+                items.deleteByHouseId(houseId); // remove the household items that were in the house
             }
         }
     }

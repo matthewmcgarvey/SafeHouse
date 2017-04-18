@@ -3,30 +3,34 @@ package com.theironyard.entities;
 import com.theironyard.services.HouseHoldItemRepository;
 import com.theironyard.services.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 public final class Items {
-    @Autowired
-    private static ItemRepository itemRepo;
-    @Autowired
-    private static HouseHoldItemRepository hhRepo;
+    private ItemRepository itemRepo;
+    private HouseHoldItemRepository hhRepo;
 
-    public static List<HouseHoldItem> findByHouseId(Integer houseId) {
+    @Autowired
+    public Items(ItemRepository itemRepo, HouseHoldItemRepository hhRepo) {
+        this.itemRepo = itemRepo;
+        this.hhRepo = hhRepo;
+    }
+
+    public List<HouseHoldItem> findByHouseId(Integer houseId) {
         return hhRepo.findByHouseId(houseId);
     }
 
-    public static void save(HouseHoldItem hhItem) {
+    public void save(HouseHoldItem hhItem) {
         hhRepo.save(hhItem);
     }
 
-    public static void deleteByHouseIdAndItem_Id(Integer houseId, Integer itemId) {
+    public void deleteByHouseIdAndItem_Id(Integer houseId, Integer itemId) {
         hhRepo.deleteByHouseIdAndItem_Id(houseId, itemId);
     }
 
-    public static void deleteByHouseId(Integer houseId) {
+    public void deleteByHouseId(Integer houseId) {
         hhRepo.deleteByHouseId(houseId);
     }
 
