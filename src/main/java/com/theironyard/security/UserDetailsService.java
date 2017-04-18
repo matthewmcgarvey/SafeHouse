@@ -22,7 +22,7 @@ public class UserDetailsService implements org.springframework.security.core.use
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findOneByName(username);
+        User user = userRepository.findByName(username);
 
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
 
