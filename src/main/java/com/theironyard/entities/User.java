@@ -15,9 +15,11 @@ public class User {
     @GeneratedValue
     private int id;
 
+    @JsonProperty(value = "username")
     @Column(nullable = false, unique = true)
     private String name;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
@@ -39,7 +41,6 @@ public class User {
         this.id = id;
     }
 
-    @JsonProperty(value = "username")
     public String getName() {
         return name;
     }
@@ -48,7 +49,6 @@ public class User {
         this.name = name;
     }
 
-    @JsonIgnore
     public String getPassword() {
         return password;
     }

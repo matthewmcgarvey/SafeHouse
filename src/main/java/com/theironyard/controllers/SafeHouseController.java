@@ -151,7 +151,11 @@ public class SafeHouseController {
         String upc = json.get("upc");
         String asin = json.get("asin");
         String imageUrl = json.get("imageUrl");
-        HouseHoldItem hhItem = new HouseHoldItem(houseId, new Item(title, brand, model, upc, asin, imageUrl));
+        Item item = items.findByAsin(asin);
+        if (item == null) {
+            item = new Item(title, brand, model, upc, asin, imageUrl);
+        }
+        HouseHoldItem hhItem = new HouseHoldItem(houseId, item);
         items.save(hhItem);
     }
 

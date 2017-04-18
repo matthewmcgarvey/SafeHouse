@@ -34,4 +34,8 @@ public final class Items {
         hhRepo.deleteByHouseId(houseId);
     }
 
+    public Item findByAsin(String asin) {
+        return itemRepo.findByAsin(asin);
+    }
+
 }
