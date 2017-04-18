@@ -1,6 +1,7 @@
 package com.theironyard.entities;
 
 import javax.persistence.*;
+import java.sql.Date;
 
 @Entity
 @Table(name = "items")
@@ -28,6 +29,9 @@ public class Item {
     @Column
     private String imageUrl;
 
+    @Column
+    private java.sql.Date date;
+
     public Item(String title, String brand, String model, String upc,  String asin, String imageUrl) {
         this.title = title;
         this.brand = brand;
@@ -35,6 +39,7 @@ public class Item {
         this.upc = upc;
         this.asin = asin;
         this.imageUrl = imageUrl;
+        this.date = new java.sql.Date(new java.util.Date().getTime());
     }
 
     public Item() {}
@@ -93,5 +98,13 @@ public class Item {
 
     public void setAsin(String asin) {
         this.asin = asin;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }
