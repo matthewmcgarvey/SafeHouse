@@ -130,6 +130,19 @@ public class SafeHouseController {
         else return new ResponseEntity<>("Unable to delete house.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @RequestMapping(path = "/users/{userId}/houses/{houseId}", method = RequestMethod.PATCH)
+    public ResponseEntity<?> updateHouseName(@PathVariable Integer userId,
+                                             @PathVariable Integer houseId,
+                                             @RequestBody Map<String, String> json) {
+        String newName = json.get("newName");
+        if (newName != null && !newName.isEmpty()) {
+            users.updateHouseName(userId, houseId, newName);
+            return new ResponseEntity<>("Success.", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Unable to update house name.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
     // get items from a user's house
     @RequestMapping(path = "/users/{userId}/houses/{houseId}/items", method = RequestMethod.GET)
     public ResponseEntity<?> getItems(@PathVariable Integer userId,

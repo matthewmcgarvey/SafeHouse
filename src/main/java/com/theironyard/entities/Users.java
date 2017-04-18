@@ -50,4 +50,15 @@ public final class Users {
         }
         return false;
     }
+
+    public void updateHouseName(Integer userId, Integer houseId, String newName) {
+        User user = userRepo.findOne(userId);
+        if (user != null && user.getHouses().size() > 0) {
+            House house = user.getHouses().stream().filter(h -> h.getId() == houseId).findFirst().orElse(null);
+            if (house != null && !house.getName().equals(newName)) {
+                house.setName(newName);
+                userRepo.save(user);
+            }
+        }
+    }
 }
