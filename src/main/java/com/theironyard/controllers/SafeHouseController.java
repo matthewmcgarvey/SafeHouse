@@ -123,9 +123,11 @@ public class SafeHouseController {
 
     // remove a user's house
     @RequestMapping(path = "/users/{userId}/houses/{houseId}", method = RequestMethod.DELETE)
-    public void deleteHouse(@PathVariable Integer userId,
+    public ResponseEntity<?> deleteHouse(@PathVariable Integer userId,
                             @PathVariable Integer houseId) {
-        users.deleteHouse(userId, houseId);
+        Boolean success = users.deleteHouse(userId, houseId);
+        if (success) return new ResponseEntity<>("Success", HttpStatus.OK);
+        else return new ResponseEntity<>("Unable to delete house.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     // get items from a user's house

@@ -33,15 +33,21 @@ public final class Users {
         return userRepo.findOne(userId);
     }
 
-    public void deleteHouse(Integer userId, Integer houseId) {
+    public Boolean deleteHouse(Integer userId, Integer houseId) {
         User user = userRepo.findOne(userId);
         if (user != null) {
-            Boolean success = user.getHouses().removeIf(house -> house.getId() == houseId);
-            userRepo.save(user);
-            houseRepo.delete(houseId);
-            if (success) {
+            House house = user.getHouses().stream().filter(h -> h.getId() == houseId).findFirst().orElse(null);
+            if (house != null) {
+                user.getHouses().remove(house);
+                if (house.getDefaultHouse() && user.getHouses().size() >= 1) {
+                    user.getHouses().get(0).setDefaultHouse(true);
+                }
+                userRepo.save(user);
+                houseRepo.delete(houseId);
                 items.deleteByHouseId(houseId); // remove the household items that were in the house
+                return true;
             }
         }
+        return false;
     }
 }
