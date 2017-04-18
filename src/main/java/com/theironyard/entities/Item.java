@@ -1,5 +1,7 @@
 package com.theironyard.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.sql.Date;
 
@@ -29,6 +31,7 @@ public class Item {
     @Column
     private String imageUrl;
 
+    @JsonIgnore
     @Column
     private java.sql.Date date;
 
