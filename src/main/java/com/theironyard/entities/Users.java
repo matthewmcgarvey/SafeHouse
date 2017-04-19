@@ -2,21 +2,26 @@ package com.theironyard.entities;
 
 import com.theironyard.services.HouseRepository;
 import com.theironyard.services.UserRepository;
-import org.dom4j.tree.AbstractEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public final class Users {
 
     private UserRepository userRepo;
     private HouseRepository houseRepo;
+    private final List<String> COLORS = Arrays.asList("red", "blue", "green", "yellow", "purple",
+                                                        "pink", "grey", "cyan", "orange");
 
     @Autowired
-    Items items;
+    private Items items;
 
     @Autowired
     public Users(UserRepository userRepo, HouseRepository houseRepo) {
@@ -62,6 +67,39 @@ public final class Users {
                 house.setName(newName);
                 userRepo.save(user);
             }
+        }
+    }
+
+    public Response addHouse(Integer userId, String houseName) {
+        User user = userRepo.findOne(userId);
+        if (user != null) {
+            List<String> takenColors = user
+                    .getHouses()
+                    .stream()
+                    .map(House::getColor)
+                    .collect(Collectors.toList());
+
+            List<String> availableColors = COLORS
+                                        .stream()
+                                        .filter(c -> ! takenColors.contains(c))
+                                        .collect(Collectors.toList());
+
+            String color;
+            if (availableColors.size() > 0) {
+                color = availableColors.get(new Random().nextInt(availableColors.size()));
+            } else {
+                color = COLORS.get(new Random().nextInt(COLORS.size()));
+            }
+
+            House house = new House(houseName, color);
+            if (user.getHouses().size() == 0) {
+                house.setDefaultHouse(true);
+            }
+            user.addHouse(house);
+            userRepo.save(user);
+            return new Response(house);
+        } else {
+            return new Response("Unable to find user by that id.", HttpStatus.BAD_REQUEST);
         }
     }
 
