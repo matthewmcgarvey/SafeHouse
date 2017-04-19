@@ -13,19 +13,19 @@ import java.util.List;
 
 public class SearchItem {
 
-    public String title;
+    private String title;
 
-    public String brand;
+    private String brand;
 
-    public String model;
+    private String model;
 
-    public String upc;
+    private String upc;
 
-    public String imageUrl;
+    private String imageUrl;
 
-    public String asin;
+    private String asin;
 
-    public SearchItem(String title, String brand, String model, String upc, String imageUrl, String asin) {
+    private SearchItem(String title, String brand, String model, String upc, String imageUrl, String asin) {
         this.title = title;
         this.brand = brand;
         this.model = model;
@@ -34,7 +34,7 @@ public class SearchItem {
         this.asin = asin;
     }
 
-    public static ResponseEntity<?> lookUpItem(String keywords, String category, String page) {
+    public static SearchItemResponse lookUpItem(String keywords, String category, String page) {
         String amazonResults = AmazonUtil.lookUpItem(keywords, category, page);
         System.out.println(amazonResults);
 
@@ -108,15 +108,62 @@ public class SearchItem {
                     searchItemResults.add(searchItem);
                 }
 
-                return new ResponseEntity<>(searchItemResults, HttpStatus.OK);
+                return new SearchItemResponse(searchItemResults);
             }
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            return new ResponseEntity<>("There is a problem with the search request. Invalid results.", HttpStatus.BAD_REQUEST);
+            return new SearchItemResponse("There is a problem with the search request. Invalid results.");
         }
+        return new SearchItemResponse("An unexpected error occurred. " + amazonResults);
+    }
 
-        return new ResponseEntity<>("An unexpected error occurred. " + amazonResults, HttpStatus.EXPECTATION_FAILED);
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getUpc() {
+        return upc;
+    }
+
+    public void setUpc(String upc) {
+        this.upc = upc;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getAsin() {
+        return asin;
+    }
+
+    public void setAsin(String asin) {
+        this.asin = asin;
     }
 }
 

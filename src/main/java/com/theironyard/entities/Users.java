@@ -2,9 +2,12 @@ package com.theironyard.entities;
 
 import com.theironyard.services.HouseRepository;
 import com.theironyard.services.UserRepository;
+import org.dom4j.tree.AbstractEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityManager;
 
 @Service
 public final class Users {
@@ -61,4 +64,5 @@ public final class Users {
             }
         }
     }
+
 }
