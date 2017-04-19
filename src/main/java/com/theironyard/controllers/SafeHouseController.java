@@ -223,6 +223,10 @@ public class SafeHouseController {
     public ResponseEntity<?> searchItems(@PathVariable String keywords,
                                          @PathVariable String category,
                                          @PathVariable String page) {
-        return SearchItem.lookUpItem(keywords, category, page);
+        SearchItemResponse response = SearchItem.lookUpItem(keywords, category, page);
+        if (response.wasError) {
+            return new ResponseEntity<>(response.errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(response.searchItems, HttpStatus.OK);
     }
 }
