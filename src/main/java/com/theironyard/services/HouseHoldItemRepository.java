@@ -12,6 +12,8 @@ public interface HouseHoldItemRepository extends CrudRepository<HouseHoldItem, I
 
     List<HouseHoldItem> findByHouseId(Integer houseId);
 
+    HouseHoldItem findByHouseIdAndItem_Id(Integer houseId, Integer itemId);
+
     @Transactional
     void deleteByHouseId(Integer houseId);
 }
