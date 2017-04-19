@@ -74,11 +74,11 @@ public final class Users {
     public Response addHouse(Integer userId, String houseName) {
         User user = userRepo.findOne(userId);
         if (user != null) {
-            Set<String> takenColors = user
+            List<String> takenColors = user
                     .getHouses()
                     .stream()
                     .map(House::getColor)
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toList());
 
             List<String> availableColors = COLORS
                                         .stream()
