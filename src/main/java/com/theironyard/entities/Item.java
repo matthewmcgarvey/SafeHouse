@@ -33,7 +33,7 @@ public class Item {
 
     @JsonIgnore
     @Column
-    private java.sql.Date date;
+    private java.sql.Date date;  // JPA not yet supporting Java.time.LocalDate
 
     public Item(String title, String brand, String model, String upc,  String asin, String imageUrl) {
         this.title = title;

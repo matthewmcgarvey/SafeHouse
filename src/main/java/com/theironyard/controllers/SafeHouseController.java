@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @CrossOrigin
 @RestController
@@ -123,9 +124,24 @@ public class SafeHouseController {
 
     // remove a user's house
     @RequestMapping(path = "/users/{userId}/houses/{houseId}", method = RequestMethod.DELETE)
-    public void deleteHouse(@PathVariable Integer userId,
+    public ResponseEntity<?> deleteHouse(@PathVariable Integer userId,
                             @PathVariable Integer houseId) {
-        users.deleteHouse(userId, houseId);
+        Boolean success = users.deleteHouse(userId, houseId);
+        if (success) return new ResponseEntity<>("Success", HttpStatus.OK);
+        else return new ResponseEntity<>("Unable to delete house.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @RequestMapping(path = "/users/{userId}/houses/{houseId}", method = RequestMethod.PATCH)
+    public ResponseEntity<?> updateHouseName(@PathVariable Integer userId,
+                                             @PathVariable Integer houseId,
+                                             @RequestBody Map<String, String> json) {
+        String newName = json.get("newName");
+        if (newName != null && !newName.isEmpty()) {
+            users.updateHouseName(userId, houseId, newName);
+            return new ResponseEntity<>("Success.", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Unable to update house name.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     // get items from a user's house
@@ -142,7 +158,7 @@ public class SafeHouseController {
 
     // add an item to a house
     @RequestMapping(path = "/users/{userId}/houses/{houseId}/items", method = RequestMethod.POST)
-    public void addItem(@PathVariable Integer userId,
+    public ResponseEntity<?> addItem(@PathVariable Integer userId,
                         @PathVariable Integer houseId,
                         @RequestBody Map<String, String> json) {
         String title = json.get("title");
@@ -151,12 +167,19 @@ public class SafeHouseController {
         String upc = json.get("upc");
         String asin = json.get("asin");
         String imageUrl = json.get("imageUrl");
+
         Item item = items.findByAsin(asin);
+
+
         if (item == null) {
             item = new Item(title, brand, model, upc, asin, imageUrl);
+        } else {
+            HouseHoldItem hhitem = items.findHhItemByHouseIdAndItem_Id(houseId, item.getId());
+            if (hhitem != null) return new ResponseEntity<>("Item already in house.", HttpStatus.BAD_REQUEST);
         }
         HouseHoldItem hhItem = new HouseHoldItem(houseId, item);
         items.save(hhItem);
+        return new ResponseEntity<>("Success", HttpStatus.OK);
     }
 
     // remove an item from a house
@@ -165,6 +188,34 @@ public class SafeHouseController {
                            @PathVariable Integer houseId,
                            @PathVariable Integer itemId) {
         items.deleteByHouseIdAndItem_Id(houseId, itemId);
+    }
+
+    @RequestMapping(path = "/users/{userId}/houses/{houseId}/items/{itemId}", method = RequestMethod.PATCH)
+    public ResponseEntity<?> moveItem(@PathVariable Integer userId,
+                         @PathVariable Integer houseId,
+                         @PathVariable Integer itemId,
+                         @RequestBody Map<String, String> json) {
+        Integer toHouseId = Integer.valueOf(json.get("houseId"));
+        Boolean success = false;
+        if (toHouseId != null) {
+            User user = users.findOne(userId);
+            if (user != null) {
+                List<House> houses = user
+                        .getHouses()
+                        .stream()
+                        .filter(house -> (house.getId() == houseId) || (house.getId() == toHouseId))
+                        .collect(Collectors.toList());
+                if (houses.size() == 2) {
+                    success = items.updateHhItemHouseId(itemId, houseId, toHouseId);
+                }
+            }
+        }
+
+        if (success) {
+            return new ResponseEntity<>("Success.", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Error in moving item.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     // Search Amazon Product API
