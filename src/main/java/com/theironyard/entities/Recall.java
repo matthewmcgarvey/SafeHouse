@@ -1,7 +1,6 @@
 package com.theironyard.entities;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "recalls")
@@ -14,7 +13,7 @@ public class Recall {
     private int recallNumber;
 
     @Column
-    private LocalDateTime recallDate;
+    private String recallDate;
 
     @Column
     private String description;
@@ -28,7 +27,18 @@ public class Recall {
     @ManyToOne
     private Item item;
 
-    public Recall() {}
+    public Recall() {
+    }
+
+    public Recall(int recallId, int recallNumber, String recallDate, String description, String url, String title) {
+        this.recallId = recallId;
+        this.recallNumber = recallNumber;
+        this.recallDate = recallDate;
+        this.description = description;
+        this.url = url;
+        this.title = title;
+    }
+
 
     public int getRecallId() {
         return recallId;
@@ -46,11 +56,11 @@ public class Recall {
         this.recallNumber = recallNumber;
     }
 
-    public LocalDateTime getRecallDate() {
+    public String getRecallDate() {
         return recallDate;
     }
 
-    public void setRecallDate(LocalDateTime recallDate) {
+    public void setRecallDate(String recallDate) {
         this.recallDate = recallDate;
     }
 
