@@ -79,17 +79,12 @@ public class SafeHouseController {
                                       @RequestBody Map<String, String> json) {
         String houseName = json.get("houseName");
 
-        User user = users.findOne(userId);
-        if (user != null) {
-            House house = new House(houseName);
-            if (user.getHouses().size() == 0) {
-                house.setDefaultHouse(true);
-            }
-            user.addHouse(house);
-            users.save(user);
-            return new ResponseEntity<>(house, HttpStatus.OK);
+        Response response = users.addHouse(userId, houseName);
+
+        if (response.wasError) {
+            return new ResponseEntity<>(response.errorMessage, response.status);
         } else {
-            return new ResponseEntity<>("Unable to find user", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(response.body, response.status);
         }
     }
 
