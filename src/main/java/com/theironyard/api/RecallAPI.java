@@ -1,5 +1,6 @@
 package com.theironyard.api;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -14,9 +15,9 @@ public class RecallAPI {
     public String productModel;
     public String UPC;
 
-    private StringBuffer url = new StringBuffer("https://www.saferproducts.gov/RestWebServices/RecallAPI?");
+    private StringBuffer url = new StringBuffer("https://www.saferproducts.gov/RestWebServices/Recall?");
 
-    public JSONObject submit() {
+    public JSONArray submit() {
         if (recallNumber != null) {
             url.append("RecallNumber=");
             url.append(recallNumber);
@@ -61,8 +62,8 @@ public class RecallAPI {
         url.append("format=json"); // for json formatting
         String recallUrl = url.toString();
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<JSONObject> response = restTemplate.getForEntity(recallUrl, JSONObject.class);
-        return response.getBody();
+        ResponseEntity<String> response = restTemplate.getForEntity(recallUrl, String.class);
+        return new JSONArray(response.getBody());
     }
 
 }
