@@ -61,7 +61,7 @@ public class UsersController {
         return new ResponseEntity<Object>("Invalid token.", HttpStatus.BAD_REQUEST);
     }
 
-    @RequestMapping(path = "/{userId}", method = RequestMethod.PATCH)
+    @RequestMapping(path = "/{userId}/username", method = RequestMethod.PATCH)
     public ResponseEntity<?> updateUserName(@PathVariable Integer userId,
                                             @RequestBody Map<String, String> json) {
         String newName = json.get("username");
@@ -74,5 +74,32 @@ public class UsersController {
         } else {
             return new ResponseEntity<>("Unable to change the user's name.", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @RequestMapping(path = "/{userId}/password", method = RequestMethod.PATCH)
+    public ResponseEntity<?> updatePassword(@PathVariable Integer userId,
+                                            @RequestBody Map<String, String> json) {
+        String newPW = json.get("newPassword");
+        String newPW2 = json.get("newPassword2");
+        String oldPW = json.get("oldPassword");
+        User user = users.findOne(userId);
+
+        String errorMsg;
+        if (user != null) {
+            if (newPW != null && !newPW.isEmpty() && newPW.equals(newPW2)) {
+                if (bCryptPasswordEncoder.matches(oldPW, user.getPassword())) {
+                    user.setPassword(bCryptPasswordEncoder.encode(newPW));
+                    users.save(user);
+                    return new ResponseEntity<>("Success", HttpStatus.OK);
+                } else {
+                    errorMsg = "Invalid old password.";
+                }
+            } else {
+                errorMsg = "Invalid new password.";
+            }
+        } else {
+            errorMsg = "Invalid user id.";
+        }
+        return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
     }
 }
