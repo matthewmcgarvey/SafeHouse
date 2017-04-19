@@ -63,16 +63,6 @@ public class SafeHouseController {
         return new ResponseEntity<Object>("Invalid token.", HttpStatus.BAD_REQUEST);
     }
 
-    // get user
-    @RequestMapping(path = "/users/{userId}", method = RequestMethod.GET)
-    public ResponseEntity<?> getUser(@PathVariable Integer userId) {
-        User user = users.findOne(userId);
-        if (user != null) {
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        }
-        return new ResponseEntity<>("Unable to find user", HttpStatus.BAD_REQUEST);
-    }
-
     // add a new house
     @RequestMapping(path = "/users/{userId}/houses", method = RequestMethod.POST)
     public ResponseEntity<?> addHouse(@PathVariable Integer userId,
@@ -228,6 +218,7 @@ public class SafeHouseController {
         return new ResponseEntity<>(response.body, HttpStatus.OK);
     }
 
+    // Get recall for an item
     @RequestMapping(path = "/recalls/{itemId}", method = RequestMethod.GET)
     public ResponseEntity<?> searchRecall(@PathVariable Integer itemId) {
         Item item = items.findItemById(itemId);
