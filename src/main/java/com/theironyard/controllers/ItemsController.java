@@ -22,7 +22,7 @@ public class ItemsController {
     private Items items;
 
     // get items from a user's house
-    @RequestMapping(path = "", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<?> getItems(@PathVariable Integer userId,
                                       @PathVariable Integer houseId) {
         List<HouseHoldItem> houseItems = items.findByHouseId(houseId);
@@ -34,7 +34,7 @@ public class ItemsController {
     }
 
     // add an item to a house
-    @RequestMapping(path = "", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> addItem(@PathVariable Integer userId,
                                      @PathVariable Integer houseId,
                                      @RequestBody Map<String, String> json) {

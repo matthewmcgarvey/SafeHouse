@@ -28,7 +28,7 @@ public class UsersController {
     private Users users;
 
     // register a new user
-    @RequestMapping(path = "", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> addUser(@RequestBody Map<String, String> json) {
         String username = json.get("username");
         String password = json.get("password");

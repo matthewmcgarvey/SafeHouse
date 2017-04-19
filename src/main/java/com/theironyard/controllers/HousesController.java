@@ -21,7 +21,7 @@ public class HousesController {
     private Users users;
 
     // add a new house
-    @RequestMapping(path = "", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> addHouse(@PathVariable Integer userId,
                                       @RequestBody Map<String, String> json) {
         String houseName = json.get("houseName");
