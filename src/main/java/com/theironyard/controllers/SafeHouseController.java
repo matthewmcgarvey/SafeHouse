@@ -92,7 +92,7 @@ public class SafeHouseController {
         }
     }
 
-    // get a user's houses
+    // get all of a user's houses
     @RequestMapping(path = "/users/{userId}/houses", method = RequestMethod.GET)
     public ResponseEntity<?> getHouses(@PathVariable Integer userId) {
         User user = users.findOne(userId);
@@ -122,7 +122,7 @@ public class SafeHouseController {
         return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
     }
 
-    // remove a user's house
+    // delete a user's house along with any items the house had
     @RequestMapping(path = "/users/{userId}/houses/{houseId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteHouse(@PathVariable Integer userId,
                             @PathVariable Integer houseId) {
@@ -131,6 +131,7 @@ public class SafeHouseController {
         else return new ResponseEntity<>("Unable to delete house.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    // update a user's house's name
     @RequestMapping(path = "/users/{userId}/houses/{houseId}", method = RequestMethod.PATCH)
     public ResponseEntity<?> updateHouseName(@PathVariable Integer userId,
                                              @PathVariable Integer houseId,
@@ -190,6 +191,7 @@ public class SafeHouseController {
         items.deleteByHouseIdAndItem_Id(houseId, itemId);
     }
 
+    // move item from one user's house to another house of that user
     @RequestMapping(path = "/users/{userId}/houses/{houseId}/items/{itemId}", method = RequestMethod.PATCH)
     public ResponseEntity<?> moveItem(@PathVariable Integer userId,
                          @PathVariable Integer houseId,
