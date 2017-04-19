@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @CrossOrigin
 @RestController
@@ -186,6 +187,34 @@ public class SafeHouseController {
                            @PathVariable Integer houseId,
                            @PathVariable Integer itemId) {
         items.deleteByHouseIdAndItem_Id(houseId, itemId);
+    }
+
+    @RequestMapping(path = "/users/{userId}/houses/{houseId}/items/{itemId}", method = RequestMethod.PATCH)
+    public ResponseEntity<?> moveItem(@PathVariable Integer userId,
+                         @PathVariable Integer houseId,
+                         @PathVariable Integer itemId,
+                         @RequestBody Map<String, String> json) {
+        Integer toHouseId = Integer.valueOf(json.get("houseId"));
+        Boolean success = false;
+        if (toHouseId != null) {
+            User user = users.findOne(userId);
+            if (user != null) {
+                List<House> houses = user
+                        .getHouses()
+                        .stream()
+                        .filter(house -> (house.getId() == houseId) || (house.getId() == toHouseId))
+                        .collect(Collectors.toList());
+                if (houses.size() == 2) {
+                    success = items.updateHhItemHouseId(itemId, houseId, toHouseId);
+                }
+            }
+        }
+
+        if (success) {
+            return new ResponseEntity<>("Success.", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Unable to move item.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     // Search Amazon Product API

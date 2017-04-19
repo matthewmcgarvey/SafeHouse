@@ -42,4 +42,17 @@ public final class Items {
         return hhRepo.findByHouseIdAndItem_Id(houseId, itemId);
     }
 
+    public boolean updateHhItemHouseId(Integer itemId, Integer fromHouseId, Integer toHouseId) {
+        HouseHoldItem hhItem = hhRepo.findOne(itemId);
+        if (hhItem != null && hhItem.getHouseId() == fromHouseId) {
+            HouseHoldItem hhItemCheck = hhRepo.findByHouseIdAndItem_Id(toHouseId, hhItem.getItem().getId());
+            if (hhItemCheck == null) {
+                hhItem.setHouseId(toHouseId);
+                HouseHoldItem updatedHhItem = hhRepo.save(hhItem);
+                return updatedHhItem.getHouseId() == toHouseId;
+            }
+        }
+        return false;
+    }
+
 }
