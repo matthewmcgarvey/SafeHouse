@@ -19,8 +19,9 @@ public class House {
     @Column
     private String color;
 
-    public House(String name) {
+    public House(String name, String color) {
         this.name = name;
+        this.color = color;
     }
 
     public House() {}
@@ -47,5 +48,13 @@ public class House {
 
     public void setDefaultHouse(Boolean defaultHouse) {
         this.defaultHouse = defaultHouse;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }
