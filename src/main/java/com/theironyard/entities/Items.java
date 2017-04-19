@@ -38,4 +38,8 @@ public final class Items {
         return itemRepo.findByAsin(asin);
     }
 
+    public HouseHoldItem findHhItemByHouseIdAndItem_Id(Integer houseId, Integer itemId) {
+        return hhRepo.findByHouseIdAndItem_Id(houseId, itemId);
+    }
+
 }
