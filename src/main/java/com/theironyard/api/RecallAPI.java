@@ -1,9 +1,14 @@
 package com.theironyard.api;
 
+import com.theironyard.entities.Item;
+import com.theironyard.entities.Recall;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RecallAPI {
     public Integer recallNumber;
@@ -64,6 +69,48 @@ public class RecallAPI {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(recallUrl, String.class);
         return new JSONArray(response.getBody());
+    }
+
+    public static List<Recall> checkRecall(Item item) {
+        JSONArray recallResults;
+
+        RecallAPI recallItem = new RecallAPI();
+        if ((!item.getModel().equals("N/A")) && (!item.getBrand().equals("N/A"))) {
+            recallItem.productName = item.getBrand() + " " + item.getModel();
+        } else {
+            recallItem.productName = item.getTitle();
+        }
+
+        recallResults = recallItem.submit();
+
+        if (recallResults.length() > 0) {
+
+            List<Recall> recallItems = new ArrayList<>();
+
+            for (int i = 0; i < recallResults.length(); i++) {
+                JSONObject recall = (JSONObject) recallResults.get(i);
+
+                Integer recallId;
+                Integer recallNumb;
+                String recallDate;
+                String recallDescription;
+                String url;
+                String title;
+
+                recallId = recall.getInt("RecallID");
+                recallNumb = recall.getInt("RecallNumber");
+                recallDate = recall.getString("RecallDate");
+                recallDescription = recall.getString("Description");
+                url = recall.getString("URL");
+                title = recall.getString("Title");
+
+
+                Recall recallItemResult = new Recall(recallId, recallNumb, recallDate, recallDescription, url, title);
+                recallItems.add(recallItemResult);
+            }
+            return recallItems;
+        }
+        return null;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.theironyard.controllers;
 
+import com.theironyard.api.RecallAPI;
 import com.theironyard.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -75,7 +76,7 @@ public class SafeHouseController {
     // add a new house
     @RequestMapping(path = "/users/{userId}/houses", method = RequestMethod.POST)
     public ResponseEntity<?> addHouse(@PathVariable Integer userId,
-                                   @RequestBody Map<String, String> json) {
+                                      @RequestBody Map<String, String> json) {
         String houseName = json.get("houseName");
 
         User user = users.findOne(userId);
@@ -125,7 +126,7 @@ public class SafeHouseController {
     // delete a user's house along with any items the house had
     @RequestMapping(path = "/users/{userId}/houses/{houseId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteHouse(@PathVariable Integer userId,
-                            @PathVariable Integer houseId) {
+                                         @PathVariable Integer houseId) {
         Boolean success = users.deleteHouse(userId, houseId);
         if (success) return new ResponseEntity<>("Success", HttpStatus.OK);
         else return new ResponseEntity<>("Unable to delete house.", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -160,8 +161,8 @@ public class SafeHouseController {
     // add an item to a house
     @RequestMapping(path = "/users/{userId}/houses/{houseId}/items", method = RequestMethod.POST)
     public ResponseEntity<?> addItem(@PathVariable Integer userId,
-                        @PathVariable Integer houseId,
-                        @RequestBody Map<String, String> json) {
+                                     @PathVariable Integer houseId,
+                                     @RequestBody Map<String, String> json) {
         String title = json.get("title");
         String brand = json.get("brand");
         String model = json.get("model");
@@ -194,9 +195,9 @@ public class SafeHouseController {
     // move item from one user's house to another house of that user
     @RequestMapping(path = "/users/{userId}/houses/{houseId}/items/{itemId}", method = RequestMethod.PATCH)
     public ResponseEntity<?> moveItem(@PathVariable Integer userId,
-                         @PathVariable Integer houseId,
-                         @PathVariable Integer itemId,
-                         @RequestBody Map<String, String> json) {
+                                      @PathVariable Integer houseId,
+                                      @PathVariable Integer itemId,
+                                      @RequestBody Map<String, String> json) {
         Integer toHouseId = Integer.valueOf(json.get("houseId"));
         Boolean success = false;
         if (toHouseId != null) {
@@ -230,5 +231,11 @@ public class SafeHouseController {
             return new ResponseEntity<>(response.errorMessage, response.status);
         }
         return new ResponseEntity<>(response.body, HttpStatus.OK);
+    }
+
+    @RequestMapping(path = "/recalls/{itemId}", method = RequestMethod.GET)
+    public ResponseEntity<?> searchRecall(@PathVariable Integer itemId) {
+        Item item = items.findItemById(itemId);
+        return new ResponseEntity<>(RecallAPI.checkRecall(item), HttpStatus.OK);
     }
 }
