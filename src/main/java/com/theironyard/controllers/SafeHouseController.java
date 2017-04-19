@@ -158,7 +158,7 @@ public class SafeHouseController {
 
     // add an item to a house
     @RequestMapping(path = "/users/{userId}/houses/{houseId}/items", method = RequestMethod.POST)
-    public void addItem(@PathVariable Integer userId,
+    public ResponseEntity<?> addItem(@PathVariable Integer userId,
                         @PathVariable Integer houseId,
                         @RequestBody Map<String, String> json) {
         String title = json.get("title");
@@ -175,10 +175,11 @@ public class SafeHouseController {
             item = new Item(title, brand, model, upc, asin, imageUrl);
         } else {
             HouseHoldItem hhitem = items.findHhItemByHouseIdAndItem_Id(houseId, item.getId());
-            if (hhitem != null) return;
+            if (hhitem != null) return new ResponseEntity<>("Item already in house.", HttpStatus.BAD_REQUEST);
         }
         HouseHoldItem hhItem = new HouseHoldItem(houseId, item);
         items.save(hhItem);
+        return new ResponseEntity<>("Success", HttpStatus.OK);
     }
 
     // remove an item from a house
@@ -213,7 +214,7 @@ public class SafeHouseController {
         if (success) {
             return new ResponseEntity<>("Success.", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Unable to move item.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error in moving item.", HttpStatus.BAD_REQUEST);
         }
     }
 
