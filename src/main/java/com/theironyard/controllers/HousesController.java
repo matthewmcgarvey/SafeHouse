@@ -36,7 +36,7 @@ public class HousesController {
     }
 
     // get all of a user's houses
-    @RequestMapping(path = "", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<?> getHouses(@PathVariable Integer userId) {
         User user = users.findOne(userId);
         if (user != null) {
