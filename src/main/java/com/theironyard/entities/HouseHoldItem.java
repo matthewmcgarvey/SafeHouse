@@ -8,7 +8,7 @@ public class HouseHoldItem {
 
     @Id
     @GeneratedValue
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
     private Integer houseId;

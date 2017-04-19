@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class Recall {
 
     @Id
-    private int recallId;
+    private Integer recallId;
 
     @Column
     private int recallNumber;

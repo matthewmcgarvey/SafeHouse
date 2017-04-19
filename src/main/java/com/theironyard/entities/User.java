@@ -13,7 +13,7 @@ public class User {
 
     @Id
     @GeneratedValue
-    private int id;
+    private Integer id;
 
     @JsonProperty(value = "username")
     @Column(nullable = false, unique = true)
