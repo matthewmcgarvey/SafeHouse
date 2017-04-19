@@ -55,4 +55,8 @@ public final class Items {
         return false;
     }
 
+    public Item findItemById(Integer itemId) {
+        return itemRepo.findOne(itemId);
+    }
+
 }
