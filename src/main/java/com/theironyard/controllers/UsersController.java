@@ -10,10 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -62,5 +59,20 @@ public class UsersController {
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
         return new ResponseEntity<Object>("Invalid token.", HttpStatus.BAD_REQUEST);
+    }
+
+    @RequestMapping(path = "/{userId}", method = RequestMethod.PATCH)
+    public ResponseEntity<?> updateUserName(@PathVariable Integer userId,
+                                            @RequestBody Map<String, String> json) {
+        String newName = json.get("username");
+        User user = users.findOne(userId);
+
+        if (newName != null && !newName.isEmpty() && user != null) {
+            user.setName(newName);
+            users.save(user);
+            return new ResponseEntity<>("Success", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Unable to change the user's name.", HttpStatus.BAD_REQUEST);
+        }
     }
 }
