@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Recall {
 
     @Id
-    private Integer recallId;
+    private int recallId;
 
     @Column
     private int recallNumber;

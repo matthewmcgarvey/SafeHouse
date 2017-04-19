@@ -8,7 +8,7 @@ public class House {
 
     @Id
     @GeneratedValue
-    private Integer id;
+    private int id;
 
     @Column(nullable = false)
     private String name;

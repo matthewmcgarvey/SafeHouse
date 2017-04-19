@@ -11,7 +11,7 @@ public class Item {
 
     @Id
     @GeneratedValue
-    private Integer id;
+    private int id;
 
     @Column(nullable = false)
     private String title;
