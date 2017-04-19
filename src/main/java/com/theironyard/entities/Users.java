@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,7 +21,7 @@ public final class Users {
                                                         "pink", "grey", "cyan", "orange");
 
     @Autowired
-    Items items;
+    private Items items;
 
     @Autowired
     public Users(UserRepository userRepo, HouseRepository houseRepo) {
