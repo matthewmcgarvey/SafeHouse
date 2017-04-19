@@ -4,7 +4,6 @@ import com.theironyard.api.AmazonUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ public class SearchItem {
         this.asin = asin;
     }
 
-    public static SearchItemResponse lookUpItem(String keywords, String category, String page) {
+    public static Response lookUpItem(String keywords, String category, String page) {
         String amazonResults = AmazonUtil.lookUpItem(keywords, category, page);
         System.out.println(amazonResults);
 
@@ -108,14 +107,14 @@ public class SearchItem {
                     searchItemResults.add(searchItem);
                 }
 
-                return new SearchItemResponse(searchItemResults);
+                return new Response(searchItemResults);
             }
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            return new SearchItemResponse("There is a problem with the search request. Invalid results.");
+            return new Response("There is a problem with the search request. Invalid results.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new SearchItemResponse("An unexpected error occurred. " + amazonResults);
+        return new Response("An unexpected error occurred. " + amazonResults, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     public String getTitle() {
