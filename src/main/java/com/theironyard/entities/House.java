@@ -16,6 +16,9 @@ public class House {
     @Column(nullable = false)
     private Boolean defaultHouse = false;
 
+    @Column
+    private String color;
+
     public House(String name) {
         this.name = name;
     }
