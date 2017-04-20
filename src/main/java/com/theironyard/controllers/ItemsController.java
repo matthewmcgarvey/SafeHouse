@@ -21,10 +21,25 @@ public class ItemsController {
     @Autowired
     private Items items;
 
-    // get items from a user's house
-    @RequestMapping(path = "", method = RequestMethod.GET)
+    // get a list of items
+    @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<?> getItems(@PathVariable Integer userId,
                                       @PathVariable Integer houseId) {
+        User user = users.findOne(userId);
+        if (user != null) {
+            House house = user
+                    .getHouses()
+                    .stream()
+                    .filter(h -> h.getId() == houseId)
+                    .findFirst()
+                    .orElse(null);
+            if (house == null) {
+                return new ResponseEntity<>("Cannot find house by that id.", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity<>("Cannot find user by that id.", HttpStatus.BAD_REQUEST);
+        }
+
         List<HouseHoldItem> houseItems = items.findByHouseId(houseId);
         if (houseItems != null) {
             return new ResponseEntity<>(houseItems, HttpStatus.OK);
@@ -33,8 +48,8 @@ public class ItemsController {
         }
     }
 
-    // add an item to a house
-    @RequestMapping(path = "", method = RequestMethod.POST)
+    // add an item
+    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> addItem(@PathVariable Integer userId,
                                      @PathVariable Integer houseId,
                                      @RequestBody Map<String, String> json) {
@@ -45,29 +60,40 @@ public class ItemsController {
         String asin = json.get("asin");
         String imageUrl = json.get("imageUrl");
 
-        Item item = items.findByAsin(asin);
+        House house = users.findHouse(userId, houseId);
 
-
-        if (item == null) {
-            item = new Item(title, brand, model, upc, asin, imageUrl);
+        if (house != null) {
+            Item item = items.findByAsin(asin);
+            if (item == null) {
+                item = new Item(title, brand, model, upc, asin, imageUrl);
+            } else {
+                HouseHoldItem hhitem = items.findHhItemByHouseIdAndItem_Id(houseId, item.getId());
+                if (hhitem != null) return new ResponseEntity<>("Item already in house.", HttpStatus.BAD_REQUEST);
+            }
+            HouseHoldItem hhItem = new HouseHoldItem(houseId, item);
+            items.save(hhItem);
+            return new ResponseEntity<>("Success", HttpStatus.OK);
         } else {
-            HouseHoldItem hhitem = items.findHhItemByHouseIdAndItem_Id(houseId, item.getId());
-            if (hhitem != null) return new ResponseEntity<>("Item already in house.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Unable to find user's house by that id.", HttpStatus.BAD_REQUEST);
         }
-        HouseHoldItem hhItem = new HouseHoldItem(houseId, item);
-        items.save(hhItem);
-        return new ResponseEntity<>("Success", HttpStatus.OK);
     }
 
-    // remove an item from a house
+    // remove an item
     @RequestMapping(path = "/{itemId}", method = RequestMethod.DELETE)
     public void deleteItem(@PathVariable Integer userId,
                            @PathVariable Integer houseId,
                            @PathVariable Integer itemId) {
-        items.deleteByHouseIdAndItem_Id(houseId, itemId);
+        User user = users.findOne(userId);
+        if (user != null) {
+            House house = user.getHouses().stream().filter(h -> h.getId() == houseId).findFirst().orElse(null);
+            if (house != null) {
+                items.deleteByHouseIdAndItem_Id(houseId, itemId);
+            }
+        }
+
     }
 
-    // move item from one user's house to another house of that user
+    // move item to another house
     @RequestMapping(path = "/{itemId}", method = RequestMethod.PATCH)
     public ResponseEntity<?> moveItem(@PathVariable Integer userId,
                                       @PathVariable Integer houseId,

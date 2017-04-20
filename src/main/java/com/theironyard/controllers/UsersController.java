@@ -1,5 +1,6 @@
 package com.theironyard.controllers;
 
+import com.theironyard.entities.Response;
 import com.theironyard.entities.User;
 import com.theironyard.entities.Users;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -28,7 +26,7 @@ public class UsersController {
     private Users users;
 
     // register a new user
-    @RequestMapping(path = "", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> addUser(@RequestBody Map<String, String> json) {
         String username = json.get("username");
         String password = json.get("password");
@@ -62,5 +60,60 @@ public class UsersController {
             return new ResponseEntity<>(user, HttpStatus.OK);
         }
         return new ResponseEntity<Object>("Invalid token.", HttpStatus.BAD_REQUEST);
+    }
+
+    // update username
+    @RequestMapping(path = "/{userId}/username", method = RequestMethod.PATCH)
+    public ResponseEntity<?> updateUserName(@PathVariable Integer userId,
+                                            @RequestBody Map<String, String> json) {
+        String newName = json.get("username");
+        User user = users.findOne(userId);
+
+        if (newName != null && !newName.isEmpty() && user != null) {
+            user.setName(newName);
+            users.save(user);
+            return new ResponseEntity<>("Success", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Unable to change the user's name.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // update password
+    @RequestMapping(path = "/{userId}/password", method = RequestMethod.PATCH)
+    public ResponseEntity<?> updatePassword(@PathVariable Integer userId,
+                                            @RequestBody Map<String, String> json) {
+        String newPW = json.get("newPassword");
+        String newPW2 = json.get("newPassword2");
+        String oldPW = json.get("oldPassword");
+        User user = users.findOne(userId);
+
+        String errorMsg;
+        if (user != null) {
+            if (newPW != null && !newPW.isEmpty() && newPW.equals(newPW2)) {
+                if (bCryptPasswordEncoder.matches(oldPW, user.getPassword())) {
+                    user.setPassword(bCryptPasswordEncoder.encode(newPW));
+                    users.save(user);
+                    return new ResponseEntity<>("Success", HttpStatus.OK);
+                } else {
+                    errorMsg = "Invalid old password.";
+                }
+            } else {
+                errorMsg = "Invalid new password.";
+            }
+        } else {
+            errorMsg = "Invalid user id.";
+        }
+        return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
+    }
+
+    // delete account
+    @RequestMapping(path = "/{userId}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteAccount(@PathVariable Integer userId) {
+        Response response = users.deleteAccount(userId);
+        if (response.wasError) {
+            return new ResponseEntity<>(response.errorMessage, response.status);
+        } else {
+            return new ResponseEntity<>(response.body, response.status);
+        }
     }
 }
