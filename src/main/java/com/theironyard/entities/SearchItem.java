@@ -111,7 +111,7 @@ public class SearchItem {
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            return new Response("There is a problem with the search request. No results or invalid results.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new Response("The search request returned no results or invalid results.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new Response("An unexpected error occurred. " + amazonResults, HttpStatus.INTERNAL_SERVER_ERROR);
     }

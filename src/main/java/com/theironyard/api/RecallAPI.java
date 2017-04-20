@@ -74,9 +74,10 @@ public class RecallAPI {
     public static List<Recall> checkRecall(Item item) {
         RecallAPI recallItem = new RecallAPI();
         if ((!item.getModel().equals("N/A")) && (!item.getBrand().equals("N/A"))) {
-            recallItem.productName = item.getBrand() + " " + item.getModel();
+            recallItem.recallDescription = item.getBrand() + " " + item.getModel();
         } else {
-            recallItem.productName = item.getTitle();
+            String[] arr = item.getTitle().split("\\s+");
+            recallItem.recallDescription = arr[0]+ " " + arr[1] + " " + arr[2];
         }
 
         JSONArray recallResults = recallItem.submit();
