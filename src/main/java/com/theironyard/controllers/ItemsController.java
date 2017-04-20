@@ -83,7 +83,14 @@ public class ItemsController {
     public void deleteItem(@PathVariable Integer userId,
                            @PathVariable Integer houseId,
                            @PathVariable Integer itemId) {
-        items.deleteByHouseIdAndItem_Id(houseId, itemId);
+        User user = users.findOne(userId);
+        if (user != null) {
+            House house = user.getHouses().stream().filter(h -> h.getId() == houseId).findFirst().orElse(null);
+            if (house != null) {
+                items.deleteByHouseIdAndItem_Id(houseId, itemId);
+            }
+        }
+
     }
 
     // move item from one user's house to another house of that user
