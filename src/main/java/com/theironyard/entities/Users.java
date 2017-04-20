@@ -106,7 +106,11 @@ public final class Users {
     public Response deleteAccount(Integer userId) {
         User user = userRepo.findOne(userId);
         if (user != null) {
-            List<Integer> houseIds = user.getHouses().stream().map(House::getId).collect(Collectors.toList());
+            List<Integer> houseIds = user
+                    .getHouses()
+                    .stream()
+                    .map(House::getId)
+                    .collect(Collectors.toList());
             houseIds.forEach(id -> items.deleteByHouseId(id));
             userRepo.delete(user);
             return new Response("Success");

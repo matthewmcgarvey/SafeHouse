@@ -62,6 +62,7 @@ public class UsersController {
         return new ResponseEntity<Object>("Invalid token.", HttpStatus.BAD_REQUEST);
     }
 
+    // update username
     @RequestMapping(path = "/{userId}/username", method = RequestMethod.PATCH)
     public ResponseEntity<?> updateUserName(@PathVariable Integer userId,
                                             @RequestBody Map<String, String> json) {
@@ -77,6 +78,7 @@ public class UsersController {
         }
     }
 
+    // update password
     @RequestMapping(path = "/{userId}/password", method = RequestMethod.PATCH)
     public ResponseEntity<?> updatePassword(@PathVariable Integer userId,
                                             @RequestBody Map<String, String> json) {
@@ -104,6 +106,7 @@ public class UsersController {
         return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
     }
 
+    // delete account
     @RequestMapping(path = "/{userId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteAccount(@PathVariable Integer userId) {
         Response response = users.deleteAccount(userId);

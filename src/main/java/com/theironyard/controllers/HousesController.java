@@ -35,7 +35,7 @@ public class HousesController {
         }
     }
 
-    // get all of a user's houses
+    // get a list of houses
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<?> getHouses(@PathVariable Integer userId) {
         User user = users.findOne(userId);
@@ -46,7 +46,7 @@ public class HousesController {
         }
     }
 
-    // get a user's house
+    // get a house
     @RequestMapping(path = "/{houseId}", method = RequestMethod.GET)
     public ResponseEntity<?> getHouse(@PathVariable Integer userId,
                                       @PathVariable Integer houseId) {
@@ -65,7 +65,7 @@ public class HousesController {
         return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
     }
 
-    // delete a user's house along with any items the house had
+    // delete a house along with any items the house had
     @RequestMapping(path = "/{houseId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteHouse(@PathVariable Integer userId,
                                          @PathVariable Integer houseId) {
@@ -74,7 +74,7 @@ public class HousesController {
         else return new ResponseEntity<>("Unable to delete house.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // update a user's house's name
+    // update a house name
     @RequestMapping(path = "/{houseId}", method = RequestMethod.PATCH)
     public ResponseEntity<?> updateHouseName(@PathVariable Integer userId,
                                              @PathVariable Integer houseId,

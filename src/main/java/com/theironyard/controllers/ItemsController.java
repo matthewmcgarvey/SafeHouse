@@ -21,7 +21,7 @@ public class ItemsController {
     @Autowired
     private Items items;
 
-    // get items from a user's house
+    // get a list of items
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<?> getItems(@PathVariable Integer userId,
                                       @PathVariable Integer houseId) {
@@ -48,7 +48,7 @@ public class ItemsController {
         }
     }
 
-    // add an item to a house
+    // add an item
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<?> addItem(@PathVariable Integer userId,
                                      @PathVariable Integer houseId,
@@ -78,7 +78,7 @@ public class ItemsController {
         }
     }
 
-    // remove an item from a house
+    // remove an item
     @RequestMapping(path = "/{itemId}", method = RequestMethod.DELETE)
     public void deleteItem(@PathVariable Integer userId,
                            @PathVariable Integer houseId,
@@ -93,7 +93,7 @@ public class ItemsController {
 
     }
 
-    // move item from one user's house to another house of that user
+    // move item to another house
     @RequestMapping(path = "/{itemId}", method = RequestMethod.PATCH)
     public ResponseEntity<?> moveItem(@PathVariable Integer userId,
                                       @PathVariable Integer houseId,
