@@ -25,6 +25,21 @@ public class ItemsController {
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<?> getItems(@PathVariable Integer userId,
                                       @PathVariable Integer houseId) {
+        User user = users.findOne(userId);
+        if (user != null) {
+            House house = user
+                    .getHouses()
+                    .stream()
+                    .filter(h -> h.getId() == houseId)
+                    .findFirst()
+                    .orElse(null);
+            if (house == null) {
+                return new ResponseEntity<>("Cannot find house by that id.", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity<>("Cannot find user by that id.", HttpStatus.BAD_REQUEST);
+        }
+
         List<HouseHoldItem> houseItems = items.findByHouseId(houseId);
         if (houseItems != null) {
             return new ResponseEntity<>(houseItems, HttpStatus.OK);
