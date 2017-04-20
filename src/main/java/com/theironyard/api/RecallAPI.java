@@ -72,8 +72,6 @@ public class RecallAPI {
     }
 
     public static List<Recall> checkRecall(Item item) {
-        JSONArray recallResults;
-
         RecallAPI recallItem = new RecallAPI();
         if ((!item.getModel().equals("N/A")) && (!item.getBrand().equals("N/A"))) {
             recallItem.recallDescription = item.getBrand() + " " + item.getModel();
@@ -82,9 +80,7 @@ public class RecallAPI {
             recallItem.recallDescription = arr[0]+ " " + arr[1] + " " + arr[2];
         }
 
-        System.out.println(recallItem.productName);
-        recallResults = recallItem.submit();
-
+        JSONArray recallResults = recallItem.submit();
         if (recallResults.length() > 0) {
 
             List<Recall> recallItems = new ArrayList<>();
