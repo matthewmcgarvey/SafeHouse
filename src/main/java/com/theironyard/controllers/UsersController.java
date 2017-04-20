@@ -1,5 +1,6 @@
 package com.theironyard.controllers;
 
+import com.theironyard.entities.Response;
 import com.theironyard.entities.User;
 import com.theironyard.entities.Users;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,5 +102,15 @@ public class UsersController {
             errorMsg = "Invalid user id.";
         }
         return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
+    }
+
+    @RequestMapping(path = "/{userId}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteAccount(@PathVariable Integer userId) {
+        Response response = users.deleteAccount(userId);
+        if (response.wasError) {
+            return new ResponseEntity<>(response.errorMessage, response.status);
+        } else {
+            return new ResponseEntity<>(response.body, response.status);
+        }
     }
 }

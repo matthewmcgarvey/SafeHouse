@@ -45,18 +45,22 @@ public class ItemsController {
         String asin = json.get("asin");
         String imageUrl = json.get("imageUrl");
 
-        Item item = items.findByAsin(asin);
+        House house = users.findHouse(userId, houseId);
 
-
-        if (item == null) {
-            item = new Item(title, brand, model, upc, asin, imageUrl);
+        if (house != null) {
+            Item item = items.findByAsin(asin);
+            if (item == null) {
+                item = new Item(title, brand, model, upc, asin, imageUrl);
+            } else {
+                HouseHoldItem hhitem = items.findHhItemByHouseIdAndItem_Id(houseId, item.getId());
+                if (hhitem != null) return new ResponseEntity<>("Item already in house.", HttpStatus.BAD_REQUEST);
+            }
+            HouseHoldItem hhItem = new HouseHoldItem(houseId, item);
+            items.save(hhItem);
+            return new ResponseEntity<>("Success", HttpStatus.OK);
         } else {
-            HouseHoldItem hhitem = items.findHhItemByHouseIdAndItem_Id(houseId, item.getId());
-            if (hhitem != null) return new ResponseEntity<>("Item already in house.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Unable to find user's house by that id.", HttpStatus.BAD_REQUEST);
         }
-        HouseHoldItem hhItem = new HouseHoldItem(houseId, item);
-        items.save(hhItem);
-        return new ResponseEntity<>("Success", HttpStatus.OK);
     }
 
     // remove an item from a house

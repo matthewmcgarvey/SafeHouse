@@ -103,4 +103,30 @@ public final class Users {
         }
     }
 
+    public Response deleteAccount(Integer userId) {
+        User user = userRepo.findOne(userId);
+        if (user != null) {
+            List<Integer> houseIds = user.getHouses().stream().map(House::getId).collect(Collectors.toList());
+            houseIds.forEach(id -> items.deleteByHouseId(id));
+            userRepo.delete(user);
+            return new Response("Success");
+        } else {
+            return new Response("Cannot find a user by that id.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    public House findHouse(Integer userId, Integer houseId) {
+        User user = userRepo.findOne(userId);
+        if (user != null) {
+            return user
+                    .getHouses()
+                    .stream()
+                    .filter(house -> house.getId() == houseId)
+                    .findFirst()
+                    .orElse(null);
+        } else {
+            return null;
+        }
+    }
+
 }
