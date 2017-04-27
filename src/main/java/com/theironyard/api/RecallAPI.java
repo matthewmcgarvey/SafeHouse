@@ -81,9 +81,8 @@ public class RecallAPI {
         }
 
         JSONArray recallResults = recallItem.submit();
+        List<Recall> recallItems = new ArrayList<>();
         if (recallResults.length() > 0) {
-
-            List<Recall> recallItems = new ArrayList<>();
 
             for (int i = 0; i < recallResults.length(); i++) {
                 JSONObject recall = (JSONObject) recallResults.get(i);
@@ -106,9 +105,8 @@ public class RecallAPI {
                 Recall recallItemResult = new Recall(recallId, recallNumb, recallDate, recallDescription, url, title);
                 recallItems.add(recallItemResult);
             }
-            return recallItems;
         }
-        return null;
+        return recallItems;
     }
 
 }
