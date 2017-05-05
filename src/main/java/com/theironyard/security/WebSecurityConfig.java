@@ -39,6 +39,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/items/**/**").permitAll()
                 // Allow recall search without being logged in
                 .antMatchers(HttpMethod.GET, "/recalls").permitAll()
+                // Allow ping to wake up server
+                .antMatchers(HttpMethod.GET, "/ping").permitAll()
                 // All other requests must be authenticated
                 .anyRequest().authenticated().and()
                 // Allow CORS

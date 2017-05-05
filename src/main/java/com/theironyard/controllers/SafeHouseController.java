@@ -22,4 +22,7 @@ public class SafeHouseController {
         }
         return new ResponseEntity<>(response.body, HttpStatus.OK);
     }
+
+    @RequestMapping(path = "/ping", method = RequestMethod.GET)
+    public void wakeUp() {}
 }
